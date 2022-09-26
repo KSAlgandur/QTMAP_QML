@@ -44,7 +44,6 @@ import QtLocation 5.8
 import QtPositioning 5.6
 import QtQuick.Controls 2.1
 
-
 Window {
 
     property double oldLat: 55.758636
@@ -52,16 +51,35 @@ Window {
 
     id: win
     visible: true
-    width: 512
-    height: 512
+    width: 720
+    height: 720
+    title: "ARINC TEST"
 
+
+//    Image{
+//            id: drone
+//            source: "qrc:/Images/drone.png"
+//            sourceSize.width: 20
+//            sourceSize.height: 20
+
+//        }
+
+
+//    MapQuickItem {
+//        id: marker
+//        anchorPoint.x: image.width/4
+//        anchorPoint.y: image.height
+//        coordinate:  QtPositioning.coordinate(oldLat, oldLng)
+
+//        sourceItem: drone
+//    }
 
 
     Map {
         id: map
         anchors.fill: parent
         activeMapType: map.supportedMapTypes[1]
-        zoomLevel: 6
+        zoomLevel: 15
         center: QtPositioning.coordinate(oldLat, oldLng)
         plugin: Plugin {
             name: 'osm';
@@ -70,6 +88,21 @@ Window {
                 value: ':/offline_tiles/'
             }
         }
+
+
+        MapQuickItem {
+                       id: marker1
+                       anchorPoint.x: image.width/2
+                       anchorPoint.y: image.height
+
+                       coordinate {
+                           latitude: oldLat
+                           longitude: oldLng
+                       }
+                       sourceItem: Image { id: image; sourceSize.height: 160; sourceSize.width: 150;  source: "qrc:/Images/drone2.png"}
+                   }
+
+
 
 
 
@@ -85,17 +118,21 @@ Window {
 
 
 
-        MapCircle{
+//        MapCircle{
 
-            color: "green"
-            center: QtPositioning.coordinate(oldLat, oldLng)
-            radius: 1000
-        }
+//            color: "green"
+//            center: QtPositioning.coordinate(oldLat, oldLng)
+//            radius: 100
+//        }
+
+
 
 
 
 
     }
+
+
 
 
 
@@ -109,9 +146,12 @@ Window {
 
 
  function addMarker(lat, lng) {
-       var item = comMarker.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
+       var item = marker1.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
        mapView.addMapItem(item)
     }
+
+
+
 
 
 
