@@ -40,16 +40,27 @@
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include  "movement.h"
+
 
 int main(int argc, char *argv[])
 {
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
-    auto obj = engine.rootObjects();
+
+      Movement mov;
+   // engine.rootContext()->setContextProperty("ClassObj",&mov);
+
+
+   qmlRegisterType<Movement>("MyCustomClass", 1, 0, "Movement");
+
+   engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+    if (engine.rootObjects().isEmpty())
+            return -1;
 
 
     return app.exec();

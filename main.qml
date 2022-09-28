@@ -43,6 +43,7 @@ import QtQuick.Window 2.2
 import QtLocation 5.8
 import QtPositioning 5.6
 import QtQuick.Controls 2.1
+import MyCustomClass 1.0
 
 Window {
 
@@ -51,35 +52,19 @@ Window {
 
     id: win
     visible: true
-    width: 720
+    width: 1600
     height: 720
     title: "ARINC TEST"
 
-
-//    Image{
-//            id: drone
-//            source: "qrc:/Images/drone.png"
-//            sourceSize.width: 20
-//            sourceSize.height: 20
-
-//        }
-
-
-//    MapQuickItem {
-//        id: marker
-//        anchorPoint.x: image.width/4
-//        anchorPoint.y: image.height
-//        coordinate:  QtPositioning.coordinate(oldLat, oldLng)
-
-//        sourceItem: drone
-//    }
-
+    Movement{
+        id: myclass
+    }
 
     Map {
         id: map
         anchors.fill: parent
         activeMapType: map.supportedMapTypes[1]
-        zoomLevel: 15
+        zoomLevel: 9
         center: QtPositioning.coordinate(oldLat, oldLng)
         plugin: Plugin {
             name: 'osm';
@@ -90,18 +75,32 @@ Window {
         }
 
 
+
+//        MapQuickItem {
+//                       id: marker1
+//                       anchorPoint.x: image.width/2
+//                       anchorPoint.y: image.height
+
+//                       coordinate {
+//                           latitude: oldLat
+//                           longitude: oldLng
+//                       }
+//                       sourceItem: Image { id: image; sourceSize.height: 160; sourceSize.width: 150;  source: "qrc:/Images/drone2.png"}
+                   //}
+
         MapQuickItem {
-                       id: marker1
-                       anchorPoint.x: image.width/2
+                       id: marker2
+                       anchorPoint.x: image.width
                        anchorPoint.y: image.height
 
-                       coordinate {
-                           latitude: oldLat
-                           longitude: oldLng
-                       }
-                       sourceItem: Image { id: image; sourceSize.height: 160; sourceSize.width: 150;  source: "qrc:/Images/drone2.png"}
-                   }
 
+
+                       coordinate {
+                           latitude: myclass.new_XCoord
+                           longitude: myclass.new_YCoord
+                       }
+                       sourceItem: Image { id: image2; x: -20;  y:-30 ; sourceSize.height: 80; sourceSize.width: 70;  source: "qrc:/Images/drone2.png"}
+                   }
 
 
 
@@ -109,30 +108,14 @@ Window {
         MapPolyline {
                 line.width: 4
                 line.color: 'green'
+//                 layer.enabled: false
+                opacity: 0.5
                 path: [
-                    { latitude: 55.758636, longitude: 37.622504},
-                    { latitude: 55.758636, longitude: 38.622504 },
+                    { latitude: oldLat, longitude: oldLng},
+                    { latitude: myclass.new_XCoord ,longitude: myclass.new_YCoord },
 
                 ]
             }
-
-
-
-//        MapCircle{
-
-//            color: "green"
-//            center: QtPositioning.coordinate(oldLat, oldLng)
-//            radius: 100
-//        }
-
-
-
-
-
-
-    }
-
-
 
 
 
@@ -142,6 +125,10 @@ Window {
      oldLat = lat
      oldLng = lng
  }
+
+
+
+
 
 
 
@@ -155,6 +142,7 @@ Window {
 
 
 
-}
+    }
 
+}
 
