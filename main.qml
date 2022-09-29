@@ -52,9 +52,13 @@ Window {
 
     id: win
     visible: true
-    width: 1600
-    height: 720
+    width: 1800
+    height: 1200
     title: "ARINC TEST"
+
+
+
+
 
     Movement{
         id: myclass
@@ -75,18 +79,6 @@ Window {
         }
 
 
-
-//        MapQuickItem {
-//                       id: marker1
-//                       anchorPoint.x: image.width/2
-//                       anchorPoint.y: image.height
-
-//                       coordinate {
-//                           latitude: oldLat
-//                           longitude: oldLng
-//                       }
-//                       sourceItem: Image { id: image; sourceSize.height: 160; sourceSize.width: 150;  source: "qrc:/Images/drone2.png"}
-                   //}
 
         MapQuickItem {
                        id: marker2
@@ -116,6 +108,50 @@ Window {
 
                 ]
             }
+
+
+
+
+        Rectangle{
+
+            id: rect
+            visible: true
+            color: "grey"
+            opacity: 0.7
+            width: 600; height: 300
+            anchors.bottom: parent.bottom
+
+
+
+            Text {
+                id: topText
+                text: qsTr("Навигационные данные")
+                font.pointSize: 16
+                 font.family: "Helvetica"
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+            }
+
+
+
+            Column {
+                              id: column
+                              anchors { fill: parent; margins: 30;}
+
+                              Text { font.pointSize: 12; text: 'Широта: ' + myclass.new_XCoord.toFixed(3)+ " град." }
+                              Text { font.pointSize: 12;text: 'Долгота: ' + myclass.new_YCoord.toFixed(3)+ " град." }
+                              Text { font.pointSize: 12;text: 'Угол: ' + myclass.mystr["angle"].toFixed(0) + " град."}
+                              Text { font.pointSize: 12;text: 'Скорость: ' + myclass.mystr["v"].toFixed(3)*100 + " м/c"}
+
+                          }
+
+
+
+
+
+}
+
 
 
 

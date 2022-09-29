@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
       Movement mov;
    // engine.rootContext()->setContextProperty("ClassObj",&mov);
 
+   qRegisterMetaType<Navigation>();
 
    qmlRegisterType<Movement>("MyCustomClass", 1, 0, "Movement");
 
