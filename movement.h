@@ -7,6 +7,7 @@
 #include <QtMath>
 #include <QDebug>
 #include <QVariantMap>
+#include <iostream>
 
 
 struct Navigation{
@@ -52,8 +53,7 @@ public:
 //     double m_y = 37.622504;
 
 
-    explicit Movement(QObject *parent = nullptr);
-
+    explicit Movement(QObject *parent = nullptr);   
 
     double new_XCoord();
     double new_YCoord();
@@ -78,6 +78,11 @@ signals:
   void myStructChanged(QVariantMap nav_data);
 
 
+
+public slots:
+
+    void on_btnGo_clicked();
+
 private slots:
 
 
@@ -94,6 +99,7 @@ private:
     vector v; // вектор скорости
     vector r; // радиус-вектор
     Navigation m_nav;
+    bool IsRun = false;
 
 
     double m_x = 0;

@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-
+    QQmlContext *context = engine.rootContext();    // Создаём корневой контекст // ----------------------------
 
       Movement mov;
    // engine.rootContext()->setContextProperty("ClassObj",&mov);
@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
             return -1;
 
+     context->setContextProperty("Movement2", &mov); // ----------------------------
 
     return app.exec();
 }

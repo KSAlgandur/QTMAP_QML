@@ -71,21 +71,8 @@ Window {
 
        }
 
-    Connections{
 
-        target: Movement2
-        onSendToQml:
-        {
-            coords.lat_new = Movement2.mystr["lat"]
-            coords.lon_new = Movement2.mystr["lng"]
-
-
-        }
-
-
-
-    }
-
+  
 
 
     id: win

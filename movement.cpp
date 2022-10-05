@@ -9,7 +9,25 @@ Movement::Movement(QObject *parent) : QObject(parent)/*,m_x(55.758636), m_y(37.6
 
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
-    timer->start(100);
+    //timer->start(100);
+
+}
+
+void Movement::on_btnGo_clicked()
+{
+    IsRun = !IsRun;
+    if (IsRun) {
+        timer->start(100);
+       qDebug() << "Запуск имитатора " << endl;
+
+
+    }
+    else {
+        timer->stop();
+        qDebug() << "Остановка имитатора " << endl;
+
+    }
+
 }
 
 
@@ -62,6 +80,10 @@ QVariantMap Movement::getMyStruct() const
 void Movement::setMyStruct(QVariantMap myStruct)
 {
 
+   // qDebug()<<"New coordinate: " << "Lat: " << myStruct["lat"].toString() <<" || "<<" Lng: " << myStruct["lng"].toString();
+
+
+
     emit myStructChanged(myStruct);
 }
 
@@ -85,8 +107,8 @@ void Movement::move()
 
     setMyStruct(myStructToQVariantMap(m_nav));
 
-    setNew_XCoord(r.x);
-    setNew_YCoord(r.y);
+//    setNew_XCoord(r.x);
+//    setNew_YCoord(r.y);
 
 
 
