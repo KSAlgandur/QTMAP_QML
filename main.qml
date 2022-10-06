@@ -53,38 +53,39 @@ Window {
 
 
 
-    Movement{
-        id: myclass
-    }
 
 
     Item
        {
            id:coords
-           property real lat_new: 55.758636; //55.775100
-           property real lon_new: 37.622504; //37.506523
-           property real alt_new: 0;
-           property real  head_new: 0;
-           property real roll_new: 0;
-           property real pitch_new: 0
-           property real vtr_new: 0;
+           property double lat_new: 55.758636; //55.775100
+           property double lon_new: 37.622504; //37.506523
+           property double alt_new: 0;
+           property double roll_new: 0;
+           property double pitch_new: 0
+           property double vtr_new: 0;
+           property double angle_new: 0
 
        }
 
-    Connections{
 
-        target: Movement2
-        onSendToQml:
+
+    Movement{
+        id: myclass
+        onMyStructChanged:
         {
-            coords.lat_new = Movement2.mystr["lat"]
-            coords.lon_new = Movement2.mystr["lng"]
-
-
+            coords.lat_new   = myclass.mystr["lat"]
+            coords.lon_new   = myclass.mystr["lng"]
+            coords.alt_new   = myclass.mystr["h"]
+            coords.roll_new  = myclass.mystr["roll"]
+            coords.pitch_new = myclass.mystr["pitch"]
+            coords.vtr_new   = myclass.mystr["v"]
+            coords.angle_new = myclass.mystr["angle"]
         }
-
-
-
     }
+
+
+
 
 
 
@@ -103,8 +104,8 @@ Window {
         id: map
         anchors.fill: parent
         activeMapType: map.supportedMapTypes[1]
-        zoomLevel: 9
-        center: QtPositioning.coordinate(oldLat, oldLng)
+        zoomLevel: 11
+        center: QtPositioning.coordinate( coords.lat_new, coords.lon_new)//coordinate(oldLat, oldLng)
         plugin: Plugin {
             name: 'osm';
             PluginParameter {
@@ -123,15 +124,31 @@ Window {
 
 
                        coordinate {
-                           latitude:  coords.lat_new//myclass.mystr["lat"]
-                           longitude: coords.lon_new //myclass.mystr["lng"]
+                           latitude:  coords.lat_new
+                           longitude: coords.lon_new
                        }
                        sourceItem: Image { id: image2; x: -20;  y:-30 ; sourceSize.height: 80; sourceSize.width: 70;  source: "qrc:/Images/drone2.png"}
 
 
 
 
+
+
    }
+
+
+
+
+//        MapCircle{
+//             color: "red"
+//             center:QtPositioning.coordinate(coords.lat_new, coords.lon_new)
+//             var x,y
+
+//             radius: 100
+
+//        }
+
+
 
         MapPolyline {
                 id: line
@@ -142,7 +159,7 @@ Window {
                 opacity: 0.5
                 path: [
                     { latitude: oldLat, longitude: oldLng},
-                    { latitude: myclass.mystr["lat"] ,longitude:myclass.mystr["lng"] },
+                    { latitude: coords.lat_new ,longitude:coords.lon_new },
 
                 ]
             }
@@ -154,7 +171,7 @@ Window {
             id: rect
             visible: true
             color: "grey"
-            opacity: 0.7
+            opacity: 0.8
             width: 600; height: 400
             anchors.bottom: parent.bottom
             radius: 11
@@ -177,10 +194,16 @@ Window {
                               id: column
                               anchors { fill: parent; margins: 30;}
 
-                              Text { font.pointSize: 12;text: 'Широта: ' + coords.lat_new.toFixed(3)+ " град." }
-                              Text { font.pointSize: 12;text: 'Долгота: ' + myclass.mystr["lng"].toFixed(3)+ " град." }
-                              Text { font.pointSize: 12;text: 'Азимут: ' + myclass.mystr["angle"].toFixed(0) + " град."}
-                              Text { font.pointSize: 12;text: 'Скорость: ' + myclass.mystr["v"].toFixed(3)*100 + " м/c"}
+
+
+                              Text { font.pointSize: 12;text: 'Широта: '   + coords.lat_new.toFixed(3)       + " град." }
+                              Text { font.pointSize: 12;text: 'Долгота: '  + coords.lon_new.toFixed(3)       + " град." }
+                              Text { font.pointSize: 12;text: 'Скорость: ' +(coords.vtr_new *100).toFixed(3) + " м/c"}
+                              Text { font.pointSize: 12;text: 'Высота: '   + coords.alt_new.toFixed(3)       + " м."}
+                              Text { font.pointSize: 12;text: 'Курс: '     + coords.angle_new.toFixed(3)     + " град."}
+                              Text { font.pointSize: 12;text: 'Крен: '     + coords.roll_new.toFixed(3)      + " град."}
+                              Text { font.pointSize: 12;text: 'Тангаж: '   + coords.pitch_new.toFixed(3)     + " град."}
+
 
                           }
 
