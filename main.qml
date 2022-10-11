@@ -45,12 +45,14 @@ import QtPositioning 5.6
 import QtQuick.Controls 2.1
 import MyCustomClass 1.0
 import QtQuick.Layouts 1.3
+import QtQuick.Controls.Styles 1.4
+
 
 Window {
 
-    property double oldLat: 55.758636
-    property double oldLng: 37.622504
-
+    property double oldLat: 55.8586
+    property double oldLng: 49.1527
+    property var anArray: []
 
 
 
@@ -58,13 +60,14 @@ Window {
     Item
        {
            id:coords
-           property double lat_new: 55.758636; //55.775100
-           property double lon_new: 37.622504; //37.506523
+           property double lat_new: 55.8586; //55.775100
+           property double lon_new: 49.1527; //37.506523
            property double alt_new: 0;
            property double roll_new: 0;
            property double pitch_new: 0
            property double vtr_new: 0;
            property double angle_new: 0
+           property real test: 500
 
        }
 
@@ -81,8 +84,14 @@ Window {
             coords.pitch_new = myclass.mystr["pitch"]
             coords.vtr_new   = myclass.mystr["v"]
             coords.angle_new = myclass.mystr["angle"]
+            coords.test      = myclass.mystr["test"]
+
+            //anArray = myclass.mystr["lat"]
+
         }
     }
+
+
 
 
 
@@ -104,7 +113,7 @@ Window {
         id: map
         anchors.fill: parent
         activeMapType: map.supportedMapTypes[1]
-        zoomLevel: 11
+        zoomLevel: 12
         center: QtPositioning.coordinate( coords.lat_new, coords.lon_new)//coordinate(oldLat, oldLng)
         plugin: Plugin {
             name: 'osm';
@@ -129,24 +138,24 @@ Window {
                        }
                        sourceItem: Image { id: image2; x: -20;  y:-30 ; sourceSize.height: 80; sourceSize.width: 70;  source: "qrc:/Images/drone2.png"}
 
-
-
-
-
-
    }
+//        MapCircle {
+//                center {
 
 
 
+//                    latitude: -27.5
+//                    longitude: 153.0
+//                }
+//                radius: 100.0
+//                color: 'green'
+//                border.width: 3
+//            }
 
-//        MapCircle{
-//             color: "red"
-//             center:QtPositioning.coordinate(coords.lat_new, coords.lon_new)
-//             var x,y
 
-//             radius: 100
+    // addMarker(coords.lat_new,coords.lon_new)
 
-//        }
+
 
 
 
@@ -158,11 +167,25 @@ Window {
 //                 layer.enabled: false
                 opacity: 0.5
                 path: [
+
                     { latitude: oldLat, longitude: oldLng},
                     { latitude: coords.lat_new ,longitude:coords.lon_new },
 
                 ]
+
+
+                Path {
+                    startX: 0; startY: 100
+                    PathLine { relativeX: 100; y: 100 }
+
+                    PathLine { relativeX: 100; y: 100 }
+                }
+
             }
+
+
+
+
 
 
 
@@ -203,9 +226,65 @@ Window {
                               Text { font.pointSize: 12;text: 'Курс: '     + coords.angle_new.toFixed(3)     + " град."}
                               Text { font.pointSize: 12;text: 'Крен: '     + coords.roll_new.toFixed(3)      + " град."}
                               Text { font.pointSize: 12;text: 'Тангаж: '   + coords.pitch_new.toFixed(3)     + " град."}
-
+                              Text { font.pointSize: 12;text: 'ТЕСТ: '     + coords.test.toFixed(4)          + " град."}
 
                           }
+
+
+
+
+                    Column{
+
+
+                        anchors.right:  parent.right;
+                        anchors.margins: 50
+                        x:0
+                        y:50
+
+                        //anchors.right:  parent.right;
+
+                        CheckBox {
+                            id: check1
+                            font.pixelSize: 15
+                            font.family: "Helvetica"
+                            checked: true
+                            text: qsTr("Автоматическая генерация")
+                            onCheckedChanged: {
+                                if(checked){
+                                    myclass.send_sate(true)
+                                    console.log(text)
+                                    check2.checked = false
+
+
+
+                                }
+                            }
+                        }
+                        CheckBox {
+                            id: check2
+                            font.pixelSize: 15
+                            font.family: "Helvetica"
+                            text: qsTr("Генерация из файла")
+                            checked:false
+                            onCheckedChanged: {
+                                if(checked){
+                                    myclass.send_sate(false)
+                                    console.log(text)
+                                    check1.checked = false
+                                }
+                            }
+                        }
+
+
+                    }
+
+
+
+                    function addMarker(lat, lng) {
+                         var item = marker1.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
+                          mapView.addMapItem(item)
+                       }
+
 
 
 
@@ -267,7 +346,6 @@ Window {
 
 
 
-
  function setCenter(lat,lng)
  {
      map.pan(oldLat - lat, oldLng - lng)
@@ -277,21 +355,13 @@ Window {
 
 
 
-
-
-
-
  function addMarker(lat, lng) {
-       var item = marker1.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
+      var item = marker1.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
        mapView.addMapItem(item)
     }
 
 
 
-
-
-
-    }
-
+}
 }
 

@@ -4,13 +4,18 @@ QT += qml quick
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    movement.cpp
+    movement.cpp \
+    #parser.cpp \
+    #pex429.cpp \
+    #readparamdispatcher.cpp \
+    #signalhandlerdispatcher.cpp \
+
 
 RESOURCES += qml.qrc
 
 
-
-include(module/structs.pri)
+include(PEX_module/PEX.pri)
+include(Parser_module/parser.pri)
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 
@@ -34,4 +39,19 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    movement.h
+   # coefficients.h \
+    movement.h \
+    #parser.h \
+    #pex429.h \
+    #pex429LNX.h \
+    #pex429LNXmacro.h \
+    #readparamdispatcher.h \
+    #signalhandlerdispatcher.h \
+
+
+
+LIBS += \
+       -lboost_system\
+       -lboost_thread
+
+DISTFILES +=

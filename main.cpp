@@ -41,6 +41,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <coefficients.h>
 #include  "movement.h"
 
 
@@ -64,6 +65,9 @@ int main(int argc, char *argv[])
             return -1;
 
      context->setContextProperty("Movement2", &mov); // ----------------------------
+
+
+
 
     return app.exec();
 }
