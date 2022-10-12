@@ -21,7 +21,10 @@
 #include "signalhandlerdispatcher.h"
 #include "readparamdispatcher.h"
 #include <thread>
+#include "po_struct.h"
 #define	ULONG	 __u32			//unsigned long int
+
+using namespace brlk;
 
 class pex429 : public QObject
 {
@@ -33,6 +36,8 @@ public:
     void send_vec (QVector<__u32> words);
      __u32 sendForArray (__u8 addr, __u32 word);
 
+
+
      void sendTo_1_chanel(const QVector<parser::word>& vec_RTM2, int ch_1);
      void sendTo_2_chanel(const QVector<parser::word>& vec_RTM4, int ch_2);
      void sendTo_3_chanel(const QVector<parser::word>& vec_RTM2_res, int ch_3);
@@ -42,10 +47,14 @@ public:
      void hINT (int signo);
      void Init();
      void sendTest(std::vector<__u32> words);
-     void update();
+
+     int  PEX_data_update();
 
 public slots:
-     int  PEX_data_update();
+void update();
+
+
+
 private:
     int global_chanel_num;
     bool timer_loop;

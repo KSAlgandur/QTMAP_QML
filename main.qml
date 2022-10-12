@@ -219,9 +219,9 @@ Window {
 
 
 
-                              Text { font.pointSize: 12;text: 'Широта: '   + coords.lat_new.toFixed(3)       + " град." }
-                              Text { font.pointSize: 12;text: 'Долгота: '  + coords.lon_new.toFixed(3)       + " град." }
-                              Text { font.pointSize: 12;text: 'Скорость: ' +(coords.vtr_new *100).toFixed(3) + " м/c"}
+                              Text { font.pointSize: 12;text: 'Широта: '   + coords.lat_new.toFixed(5)       + " град." }
+                              Text { font.pointSize: 12;text: 'Долгота: '  + coords.lon_new.toFixed(5)       + " град." }
+                              Text { font.pointSize: 12;text: 'Скорость: ' +(coords.vtr_new).toFixed(3) + " м/c"}
                               Text { font.pointSize: 12;text: 'Высота: '   + coords.alt_new.toFixed(3)       + " м."}
                               Text { font.pointSize: 12;text: 'Курс: '     + coords.angle_new.toFixed(3)     + " град."}
                               Text { font.pointSize: 12;text: 'Крен: '     + coords.roll_new.toFixed(3)      + " град."}

@@ -1,5 +1,5 @@
 #include "movement.h"
-//boost::thread t;
+boost::thread t;
 
 Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
   ,pex("/dev/pex429_0",parent, pars)
@@ -11,15 +11,20 @@ Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
 
     timer = new QTimer(this);
     timer2 = new QTimer(this);
-    timerQML = new QTimer(this);
+    timer3 = new QTimer(this);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
     connect(timer2,SIGNAL(timeout()),this,SLOT(generate_new_angle()));
-   // connect(timerQML, SIGNAL(timeout()), this, SLOT(not_auto_gen_data()));
+     //connect(timer3,SIGNAL(timeout()),&pex,SLOT(update()));
 
     //timerQML->start(100);
-    timer2->start(9000);
+     timer2->start(9000);
+
      pex.connectToPEX();
+     t = boost::thread(&pex429::update,&pex);
+     t.detach();
+
+
 
 }
 
@@ -27,20 +32,21 @@ void Movement::on_btnGo_clicked()
 {
     IsRun = !IsRun;
     if (IsRun) {
-        timer->start(100);
+        timer->start(10);
+//         timer3->start(100);
 
        qDebug() << "Запуск имитатора " << endl;
-
+        //pex.update();
 //       t = boost::thread(&pex429::update,&pex);
 //       t.detach();
-         //pex.connectToPEX();
+
 
 
 
     }
     else {
         timer->stop();
-        qDebug() << "Остановка имитатора " << endl;
+
 
     }
 
@@ -79,12 +85,52 @@ void Movement::qml_update(QVector<parser::word> vec_RTM)
     for(int i  = 0 ; i < vec_RTM.size(); i ++ ){
 
 
+        if(ToOctal(vec_RTM[i].addr8) == 310)
+        {
+            m_nav.m_lat = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg ; // Георграф широта
+
+        }
+
+        if(ToOctal(vec_RTM[i].addr8) == 311)
+        {
+            m_nav.m_lng = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg; // Геог.долгота
+
+        }
+        else if(ToOctal(vec_RTM[i].addr8) == 223)
+        {
+
+            m_nav.m_h = ((get_value_from_word(vec_RTM[i].data32,29,12,true)) * 0.5); // Высота БЛА над Элипсом
+
+        }
+        else if(ToOctal(vec_RTM[i].addr8) == 312)
+        {
+
+            m_nav.m_v = get_value_from_word(vec_RTM[i].data32,28,14,true)*a_c::K2;// Путевая скорость
+
+        }
+
+
+        else if(ToOctal(vec_RTM[i].addr8) == 314)
+        {
+
+            m_nav.m_angle = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Курс
+
+        }
+
+        else if(ToOctal(vec_RTM[i].addr8) == 325)
+        {
+
+            m_nav.m_roll = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Крен
+
+        }
+
         if(ToOctal(vec_RTM[i].addr8) == 324)
         {
-            m_nav.m_test = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ;
-//            std::cout  <<   (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg <<"   " <<endl ;
-//            std::cout  <<"ddd"<<"  " << endl ;
+            m_nav.m_pitch = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ; // Тангаж инерциальный
+
         }
+
+
 
 
     }
@@ -136,29 +182,9 @@ void Movement::move()
 
     pars.parsing();
 
-  if(!autoGen)
+  if(autoGen)
     {
        not_auto_gen_data();
-       v.x = v0*cos(angle);
-       v.y = v0*sin(angle);
-
-       r.x += v.x*dt;
-       r.y += v.y*dt;
-
-
-       m_nav.m_roll  = 0.54 + (rand()%50)/8;
-       m_nav.m_pitch = 12.45 + (rand()%100)/12;
-       m_nav.m_angle = angle *180/M_PI;
-       m_nav.m_lat   = r.x;
-       m_nav.m_lng   = r.y;
-       m_nav.m_v     = sqrt(pow(v.x,2) + pow(v.y,2));
-
-
-           float h_counter = 1;
-           speed_imit     += 0.0001;
-           h_counter       = h_counter * speed_imit * 100;
-           m_nav.m_h       = h_counter;
-
 
   }
 

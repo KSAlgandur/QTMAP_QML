@@ -1,5 +1,4 @@
  
-
 !contains(DEFINES, PARSER) {
 message("PARSER loaded");
 
@@ -14,4 +13,3 @@ message("PARSER loaded");
     INCLUDEPATH += $$PWD/
 }
 
-DISTFILES +=

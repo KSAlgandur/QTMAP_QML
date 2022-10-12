@@ -13,7 +13,7 @@ SOURCES += main.cpp \
 
 RESOURCES += qml.qrc
 
-
+include(Brlk/brlk.pri)
 include(PEX_module/PEX.pri)
 include(Parser_module/parser.pri)
 # Additional import path used to resolve QML modules in Qt Creator's code model
@@ -39,7 +39,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-   # coefficients.h \
+    #coefficients.h \
     movement.h \
     #parser.h \
     #pex429.h \
@@ -47,8 +47,6 @@ HEADERS += \
     #pex429LNXmacro.h \
     #readparamdispatcher.h \
     #signalhandlerdispatcher.h \
-
-
 
 LIBS += \
        -lboost_system\

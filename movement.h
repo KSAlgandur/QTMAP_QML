@@ -1,5 +1,6 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
+#include <QThread>
 
 #include <QObject>
 #include <QTimer>
@@ -101,11 +102,12 @@ private slots:
 void move();
 void generate_new_angle();
 
+
 private:
     QTimer *timer;
     QTimer *timer2;
-    QTimer *timerQML;
-    double dt = 0.0003; // временной шаг
+    QTimer *timer3;
+    double dt = 0.00003; // временной шаг
     double v0 = 0.575; // начальная скорость
     double angle = 220.0/180.0*M_PI; // начальное направление скорости
     vector v; // вектор скорости
@@ -113,6 +115,7 @@ private:
     Navigation m_nav;
     bool IsRun = false;
 
+    QThread* thread = new QThread;
 
     parser pars;
     pex429 pex;

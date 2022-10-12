@@ -1,7 +1,7 @@
 #include "pex429.h"
 #include <chrono>
 #include <thread>
-boost::thread t;
+//boost::thread t;
 
 
 //std::vector<__u32> vec1 = {268435444,4212086944,2684354744,4193000144,3759816944,2684358144};
@@ -9,9 +9,7 @@ pex429::pex429(const char* pex_name,QObject *parent, parser& pars):QObject(paren
 {
     testMode = 1;
     this -> pex_name = pex_name;
-    connect(&tm_pex, SIGNAL(timeout()), this,  SLOT(PEX_data_update()));
 
-// t = boost::thread(&pex429::ReadDataFromPEX,this);
    SignalHandlerDispatcher::setHandler(this);
 }
 
@@ -24,13 +22,14 @@ pex429::~pex429()
 
 void pex429::update()
 {
-    while (timer_loop == true)
-    {
-        std::cout << "THREAD++++++\n";//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  while (timer_loop == true)
+     {
+        qDebug() << "THREAD++++++\n";
         int chanel_num = PEX_data_update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));//200
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));//200
         ReadDataFromPEX(chanel_num);
-    }
+   }
 }
 int pex429::connectToPEX()
 {
@@ -79,10 +78,11 @@ ioctl(hARINC,IOCTL_GET_SER_NUMBER ,Data);
    }
    PUSK_SO(hARINC,Data,1,0,0,0);
 
-   PEX_data_update();
+    // PEX_data_update();
 
-   t = boost::thread(&pex429::update,this);
-   t.detach();
+//   t = boost::thread(&pex429::update,this);
+//   t.detach();
+
 
 
 return 0;
@@ -202,7 +202,7 @@ void pex429::Disconnect()
 
 void pex429::ReadDataFromPEX(int& chanel_num)
 {
-
+    //std::cout<<"im raed"<< endl;
     int  chanel =  chanel_num;
     int size = 0 ;
     std::string chanel_name;
