@@ -25,10 +25,11 @@ void pex429::update()
 
   while (timer_loop == true)
      {
-        qDebug() << "THREAD++++++\n";
+        //qDebug() << "THREAD++++++\n";
         int chanel_num = PEX_data_update();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));//200
-        ReadDataFromPEX(chanel_num);
+//        ReadDataFromPEX(chanel_num);
+
    }
 }
 int pex429::connectToPEX()

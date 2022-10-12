@@ -1,9 +1,11 @@
 #include "movement.h"
+#include <QThread>
 boost::thread t;
 
 Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
   ,pex("/dev/pex429_0",parent, pars)
 {
+
 
     // начальное положение тела
     r.x = m_x = 55.8586;//55.758636;
@@ -21,8 +23,8 @@ Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
      timer2->start(9000);
 
      pex.connectToPEX();
-//     t = boost::thread(&pex429::update,&pex);
-//     t.detach();
+     t = boost::thread(&pex429::update,&pex);
+     t.detach();
 
 
 
@@ -32,13 +34,13 @@ void Movement::on_btnGo_clicked()
 {
     IsRun = !IsRun;
     if (IsRun) {
-        timer->start(10);
+        timer->start(100);
 //         timer3->start(100);
 
        qDebug() << "Запуск имитатора " << endl;
         //pex.update();
-       t = boost::thread(&pex429::update,&pex);
-       t.detach();
+//       t = boost::thread(&pex429::update,&pex);
+//       t.detach();
 
 
 
@@ -47,7 +49,9 @@ void Movement::on_btnGo_clicked()
     else {
         timer->stop();
 
-        t.interrupt();
+
+        qDebug() << "Остановка имитатора " << endl;
+
     }
 
 }
