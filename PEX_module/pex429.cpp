@@ -1,10 +1,9 @@
 #include "pex429.h"
 #include <chrono>
 #include <thread>
-//boost::thread t;
 
 
-//std::vector<__u32> vec1 = {268435444,4212086944,2684354744,4193000144,3759816944,2684358144};
+
 pex429::pex429(const char* pex_name,QObject *parent, parser& pars):QObject(parent),pars(pars)
 {
     testMode = 1;
@@ -22,15 +21,14 @@ pex429::~pex429()
 
 void pex429::update()
 {
-
   while (timer_loop == true)
      {
-        //qDebug() << "THREAD++++++\n";
+//      qDebug() << "THREAD++++++\n";
         int chanel_num = PEX_data_update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));//200
-//        ReadDataFromPEX(chanel_num);
-
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+        ReadDataFromPEX(chanel_num);
    }
+
 }
 int pex429::connectToPEX()
 {
@@ -62,17 +60,13 @@ ioctl(hARINC,IOCTL_GET_SER_NUMBER ,Data);
    INT_SET(hARINC,Data);
 
 //---------------------------------------------------------------------------------------------------
-   timer_loop = true;
+  //timer_loop = true;
    Init();
-//   sendTest(vec1);
-
-
 //3.3.2.9. Пуск канала/ установка задания в канале .
    for (i1=1; i1<=4; i1++)
    {
        PUSK_SI(hARINC,Data,i1,0,1,1);
    }
-
    for (i1=2; i1<=4; i1++)
    {
        PUSK_SO(hARINC,Data,i1,0,1,0);
@@ -83,8 +77,6 @@ ioctl(hARINC,IOCTL_GET_SER_NUMBER ,Data);
 
 //   t = boost::thread(&pex429::update,this);
 //   t.detach();
-
-
 
 return 0;
 }
@@ -261,7 +253,7 @@ void pex429::hINT(int signo)
 
     if(w&0xf00)	numberOfINT1++;
     WRITE_RI(hARINC,Data);
-    std::cout << "=====Прерывание=====" << std::endl;   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //std::cout << "=====Прерывание=====" << std::endl;   /////////////////////////////////////////////////////////////////////////////////////////////////////////
     return ;
 }
 
@@ -299,5 +291,10 @@ void pex429::sendTest(std::vector<__u32> words)
         outputCode= words[i];
         WRITE_PRM(hARINC,Data,1,0,i,outputCode);
     }
+}
+
+void pex429::thread_loop_state()
+{
+    timer_loop =! timer_loop;
 }
 

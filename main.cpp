@@ -50,24 +50,17 @@ int main(int argc, char *argv[])
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-    QQmlContext *context = engine.rootContext();    // Создаём корневой контекст // ----------------------------
-
-      Movement mov;
-   // engine.rootContext()->setContextProperty("ClassObj",&mov);
-
-   qRegisterMetaType<Navigation>();
-
-   qmlRegisterType<Movement>("MyCustomClass", 1, 0, "Movement");
-
-   engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-
-    if (engine.rootObjects().isEmpty())
-            return -1;
-
-     context->setContextProperty("Movement2", &mov); // ----------------------------
 
 
 
+        qRegisterMetaType<Navigation>();
+
+        qmlRegisterType<Movement>("MyCustomClass", 1, 0, "Movement");
+
+        engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
+
+         if (engine.rootObjects().isEmpty())
+                 return -1;
 
     return app.exec();
 }

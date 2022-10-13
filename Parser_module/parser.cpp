@@ -1,7 +1,5 @@
 #include "parser.h"
 
-
-
 parser::parser(QString file_name)
 {
     OpenFile(file_name);
@@ -55,6 +53,7 @@ void parser::parsing()
 
         QString str = file.readLine();
         QStringList lst = str.split(" ");
+
          for(int i = 0 ;i < lst.size(); i++)
          {
              if(lst.at(i) == "No.11,")
@@ -84,8 +83,6 @@ void parser::parsing()
 //                  break;
 //             }
 
-
-
          }
 
          if(RTM2_update || RTM4_update || RTM2_reserve_update || RTM4_reserve_update) // работает для чередующейся последовательности слов в файле
@@ -96,27 +93,22 @@ void parser::parsing()
       }
 }
 
-void parser::RTM2(QStringList lst, QString str)
+void parser::RTM2(QStringList& lst, QString& str)
 {
     word w;
     QVector<word> &vec = is_reserve_2 ?  vec_RTM2_res : vec_RTM2;
 
     if(lst.at(4) == "270o," || lst.at(4) != "236o,")
     {
-
        w.addr8 =  ToDecimal(str.mid(24,3).toInt(nullptr,10));
        w.data32 = str.mid(8,6).toInt(nullptr,16);
        vec.append(w);
-
     }
-
-
     if(vec.isEmpty()== false && vec.at(0).addr8!= 184 )//обратный перевод 184x10 = 270о//
     {
         vec.clear();
         vec.clear();
     }
-
     if (lst.at(4) == "236o," && vec.size() == 29)
     {
             w.addr8 = str.mid(24,3).toInt(nullptr,8);
@@ -125,13 +117,11 @@ void parser::RTM2(QStringList lst, QString str)
 
             if(is_reserve_2)
             {
-
                 RTM2_reserve_update = true;
                 qDebug() << " RTM2_res_update" << endl;
             }
             else
             {
-
                 RTM2_update = true;
                 //qDebug() << " RTM2_update" << endl;
             }
@@ -139,18 +129,16 @@ void parser::RTM2(QStringList lst, QString str)
 
 }
 
-void parser::RTM4(QStringList lst, QString str)
+void parser::RTM4(QStringList& lst, QString& str)
 {
     word w;
     QVector<word> &vec = is_reserve_4 ?  vec_RTM4_res : vec_RTM4;
 
     if(lst.at(4) == "317o," || lst.at(9) != "127o,")
     {
-
         w.addr8 = ToDecimal(str.mid(24,3).toInt());
         w.data32 = str.mid(8,6).toInt(nullptr,16);
         vec.append(w);
-
     }
 
     if(vec.isEmpty()== false && vec.at(0).addr8!= 207 )//обратный перевод 207x10 = 317о//
@@ -164,7 +152,6 @@ void parser::RTM4(QStringList lst, QString str)
         w.addr8 = ToDecimal(str.mid(24,3).toInt());
         w.data32 = str.mid(8,3).toInt(nullptr,16);
         vec.append(w);
-
 
          if(is_reserve_4)
          {
@@ -180,9 +167,7 @@ void parser::RTM4(QStringList lst, QString str)
          }
     }
 
-
 }
-
 bool parser::RTM2_is_updaded()
 {
     return RTM2_update;

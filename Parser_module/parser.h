@@ -8,15 +8,14 @@
 #include<atomic>
 #include <linux/types.h>
 
-
 class parser
 {
 public:
     explicit parser(QString file_name);
     ~parser();
     void parsing();
-    void RTM2(QStringList lst,QString str);
-    void RTM4(QStringList lst,QString str);
+    void RTM2(QStringList& lst,QString& str);
+    void RTM4(QStringList& lst,QString& str);
 //    void RTM2_reserve(QStringList lst,QString str);
 //    void RTM4_reserve(QStringList lst,QString str);
 

@@ -1,17 +1,17 @@
 #include "movement.h"
 boost::thread t;
+boost::mutex mutex;
+
 
 Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
   ,pex("/dev/pex429_0",parent, pars)
 {
-
     // начальное положение тела
     r.x = m_x = 55.8586;//55.758636;
     r.y = m_y = 49.1527;//37.622504;
 
     timer = new QTimer(this);
     timer2 = new QTimer(this);
-    timer3 = new QTimer(this);
 
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
     connect(timer2,SIGNAL(timeout()),this,SLOT(generate_new_angle()));
@@ -21,119 +21,92 @@ Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
      timer2->start(9000);
 
      pex.connectToPEX();
-//     t = boost::thread(&pex429::update,&pex);
-//     t.detach();
-
-
-
 }
 
 void Movement::on_btnGo_clicked()
 {
     IsRun = !IsRun;
     if (IsRun) {
-        timer->start(10);
-//         timer3->start(100);
 
-       qDebug() << "Запуск имитатора " << endl;
-        //pex.update();
-       t = boost::thread(&pex429::update,&pex);
-       t.detach();
-
-
-
-
+        timer->start(1);
+        pex.thread_loop_state();
+        qDebug() << "Запуск имитатора " << endl;
+        t = boost::thread(&pex429::update,&pex);
+        t.detach();
     }
     else {
         timer->stop();
-
-        t.interrupt();
+        pex.thread_loop_state();
+        qDebug() << "Остановка имитатора " << endl;
     }
-
 }
 
 void Movement::auto_gen_data()
 {
-
   //Пока пусто//
-
-
 }
 
 void Movement::not_auto_gen_data()
 {
 
+    boost::lock_guard<boost::mutex> lock(mutex);
+
     if(pars.RTM2_is_updaded())
     {
-
        qml_update(pars.getData_RTM2());
     }
+
     if(pars.RTM4_is_updaded())
     {
-
        qml_update(pars.getData_RTM4());
     }
-
-
 
 }
 
 void Movement::qml_update(QVector<parser::word> vec_RTM)
 {
 
-    //std:: cout <<" im here";
-    for(int i  = 0 ; i < vec_RTM.size(); i ++ ){
-
+  if(vec_RTM.size() != 0)
+  {
+    for(int i  = 0 ; i < vec_RTM.size(); ++i){
 
         if(ToOctal(vec_RTM[i].addr8) == 310)
         {
             m_nav.m_lat = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg ; // Георграф широта
-
         }
-
         if(ToOctal(vec_RTM[i].addr8) == 311)
         {
             m_nav.m_lng = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg; // Геог.долгота
-
         }
         else if(ToOctal(vec_RTM[i].addr8) == 223)
         {
-
             m_nav.m_h = ((get_value_from_word(vec_RTM[i].data32,29,12,true)) * 0.5); // Высота БЛА над Элипсом
-
         }
         else if(ToOctal(vec_RTM[i].addr8) == 312)
         {
-
             m_nav.m_v = get_value_from_word(vec_RTM[i].data32,28,14,true)*a_c::K2;// Путевая скорость
-
         }
-
-
         else if(ToOctal(vec_RTM[i].addr8) == 314)
         {
-
             m_nav.m_angle = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Курс
-
         }
 
         else if(ToOctal(vec_RTM[i].addr8) == 325)
         {
-
             m_nav.m_roll = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Крен
-
         }
-
         if(ToOctal(vec_RTM[i].addr8) == 324)
         {
             m_nav.m_pitch = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ; // Тангаж инерциальный
-
         }
 
-
-
-
     }
+
+
+        }
+  else qDebug() << "Ошибка";
+
+
 
 
 }
@@ -170,22 +143,15 @@ QVariantMap Movement::getMyStruct() const
 void Movement::setMyStruct(QVariantMap myStruct)
 {
 
-   // qDebug()<<"New coordinate: " << "Lat: " << myStruct["lat"].toString() <<" || "<<" Lng: " << myStruct["lng"].toString();
-
-
-
     emit myStructChanged(myStruct);
 }
 
 void Movement::move()
 {
 
-    pars.parsing();
-
   if(autoGen)
     {
        not_auto_gen_data();
-
   }
 
   else
@@ -249,16 +215,6 @@ Navigation Movement::myStructFromQVariantMap(const QVariantMap &vm) const
         res.m_test   = vm.value("test").toDouble();
 
         return res;
-}
-
-bool Movement::myStructEqual(const Navigation &myStruct1, const Navigation &myStruct2)
-{
-       if (myStruct1.m_angle != myStruct2.m_angle) return false;
-       //if (myStruct1.m_lat   != myStruct2.m_lat) return false;
-       if (myStruct1.m_lng   != myStruct2.m_lng) return false;
-       if (myStruct1.m_v     != myStruct2.m_v) return false;
-
-       return true;
 }
 
 

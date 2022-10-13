@@ -1,6 +1,5 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
-#include <QThread>
 
 #include <QObject>
 #include <QTimer>
@@ -13,6 +12,7 @@
 #include <QString>
 #include <pex429.h>
 #include <coefficients.h>
+#include <boost/thread/mutex.hpp>
 
 struct Navigation{
     Q_GADGET
@@ -22,7 +22,7 @@ struct Navigation{
     Q_PROPERTY(double v MEMBER m_v) // _СКОРОСТЬ
     Q_PROPERTY(double roll MEMBER m_roll) //_КРЕН
     Q_PROPERTY(double pitch MEMBER m_pitch) //_ ТАНГАЖ
-    Q_PROPERTY(double h MEMBER m_h) //_ ТАНГА
+    Q_PROPERTY(double h MEMBER m_h) //_ ВЫСОТА
     Q_PROPERTY(double test MEMBER m_test) //_ teст
 
 public:
@@ -37,71 +37,45 @@ public:
 
 };Q_DECLARE_METATYPE(Navigation)
 
-
-
  struct vector {
 
     //explicit vector(QObject *parent = nullptr);
     double x;
     double y;
-
 };
-
 
 class Movement : public QObject
 {
     Q_OBJECT
-
     // Отправка структуры
     Q_PROPERTY(QVariantMap mystr READ getMyStruct WRITE setMyStruct NOTIFY myStructChanged)
 
-
 public:
-
-//     double m_x = 55.758636;
-//     double m_y = 37.622504;
-
-
     explicit Movement(QObject *parent = nullptr);   
-
-
-
 
     QVariantMap getMyStruct() const;
     void setMyStruct(QVariantMap myStruct);
 
     QVariantMap myStructToQVariantMap(Navigation const &myStruct) const;
     Navigation myStructFromQVariantMap(QVariantMap const &vm) const;
-    bool myStructEqual(Navigation const &myStruct1, Navigation const &myStruct2);
-
-
 
 signals:
 
-
-  void myStructChanged(QVariantMap nav_data);
-
-   void checkedChanged();
-
-
-
+  void myStructChanged(const QVariantMap& nav_data);
+  void checkedChanged();
 
 public slots:
 
     void on_btnGo_clicked();
     void auto_gen_data();
     void not_auto_gen_data();
-    void qml_update(QVector<parser::word> vec_RTM);
+    void qml_update(QVector<parser::word> vec_RTM) ;
     bool send_sate(bool state);
-
-
-
 
 private slots:
 
 void move();
 void generate_new_angle();
-
 
 private:
     QTimer *timer;
@@ -115,8 +89,6 @@ private:
     Navigation m_nav;
     bool IsRun = false;
 
-    QThread* thread = new QThread;
-
     parser pars;
     pex429 pex;
 
@@ -125,8 +97,6 @@ private:
 
     double speed_imit = 0;
     bool autoGen = false;
-
-
 
     int ToOctal(int decimal)
     {
@@ -170,7 +140,6 @@ private:
 
 
 }
-
 
 };
 

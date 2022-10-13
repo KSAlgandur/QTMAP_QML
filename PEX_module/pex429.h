@@ -47,6 +47,7 @@ public:
      void hINT (int signo);
      void Init();
      void sendTest(std::vector<__u32> words);
+     void thread_loop_state();
 
      int  PEX_data_update();
 
@@ -57,7 +58,7 @@ void update();
 
 private:
     int global_chanel_num;
-    bool timer_loop;
+    bool timer_loop = false ;
     const int ch_1 = 1;
     const int ch_2 = 2;
     const int ch_3 = 3;
