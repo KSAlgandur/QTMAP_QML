@@ -1,4 +1,5 @@
 #include "movement.h"
+
 boost::thread t;
 boost::mutex mutex;
 
@@ -28,7 +29,7 @@ void Movement::on_btnGo_clicked()
     IsRun = !IsRun;
     if (IsRun) {
 
-        timer->start(1);
+        timer->start(10);
         pex.thread_loop_state();
         qDebug() << "Запуск имитатора " << endl;
         t = boost::thread(&pex429::update,&pex);
@@ -49,67 +50,77 @@ void Movement::auto_gen_data()
 void Movement::not_auto_gen_data()
 {
 
-    boost::lock_guard<boost::mutex> lock(mutex);
+    try {
 
-    if(pars.RTM2_is_updaded())
-    {
-       qml_update(pars.getData_RTM2());
+        if(pars.RTM2_is_updaded())
+        {
+           const std::lock_guard<std::mutex> lock(pars.mutex);
+           qml_update(pars.getData_RTM2());
+        }
+
+        if(pars.RTM4_is_updaded())
+        {
+           const std::lock_guard<std::mutex> lock(pars.mutex);
+           qml_update(pars.getData_RTM4());
+        }
+
+    }  catch (std::out_of_range& ex) {
+
+        std::cout << ex.what() << "\n";
+        qDebug() << ex.what() << "\n";
     }
 
-    if(pars.RTM4_is_updaded())
-    {
-       qml_update(pars.getData_RTM4());
-    }
+
 
 }
 
 void Movement::qml_update(QVector<parser::word> vec_RTM)
 {
 
-  if(vec_RTM.size() != 0)
-  {
-    for(int i  = 0 ; i < vec_RTM.size(); ++i){
-
-        if(ToOctal(vec_RTM[i].addr8) == 310)
+        if(vec_RTM.size() == 0)
         {
-            m_nav.m_lat = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg ; // Георграф широта
-        }
-        if(ToOctal(vec_RTM[i].addr8) == 311)
-        {
-            m_nav.m_lng = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg; // Геог.долгота
-        }
-        else if(ToOctal(vec_RTM[i].addr8) == 223)
-        {
-            m_nav.m_h = ((get_value_from_word(vec_RTM[i].data32,29,12,true)) * 0.5); // Высота БЛА над Элипсом
-        }
-        else if(ToOctal(vec_RTM[i].addr8) == 312)
-        {
-            m_nav.m_v = get_value_from_word(vec_RTM[i].data32,28,14,true)*a_c::K2;// Путевая скорость
-        }
-        else if(ToOctal(vec_RTM[i].addr8) == 314)
-        {
-            m_nav.m_angle = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Курс
+            throw std::out_of_range("Vector length  = 0 ");
         }
 
-        else if(ToOctal(vec_RTM[i].addr8) == 325)
-        {
-            m_nav.m_roll = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Крен
-        }
-        if(ToOctal(vec_RTM[i].addr8) == 324)
-        {
-            m_nav.m_pitch = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ; // Тангаж инерциальный
-        }
+          for(int i  = 0 ; i < vec_RTM.size(); ++i){
 
-    }
+              if(ToOctal(vec_RTM[i].addr8) == 310)
+              {
+                  m_nav.m_lat = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg ; // Георграф широта
+              }
+              if(ToOctal(vec_RTM[i].addr8) == 311)
+              {
+                  m_nav.m_lng = (double)(get_value_from_word(vec_RTM[i].data32,28,9,true)*a_c::K1)*a_c::rad2deg; // Геог.долгота
+              }
+              else if(ToOctal(vec_RTM[i].addr8) == 223)
+              {
+                  m_nav.m_h = ((get_value_from_word(vec_RTM[i].data32,29,12,true)) * 0.5); // Высота БЛА над Элипсом
+              }
+              else if(ToOctal(vec_RTM[i].addr8) == 312)
+              {
+                  m_nav.m_v = get_value_from_word(vec_RTM[i].data32,28,14,true)*a_c::K2;// Путевая скорость
+              }
+              else if(ToOctal(vec_RTM[i].addr8) == 314)
+              {
+                  m_nav.m_angle = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Курс
+              }
+
+              else if(ToOctal(vec_RTM[i].addr8) == 325)
+              {
+                  m_nav.m_roll = get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg ;// Крен
+              }
+              if(ToOctal(vec_RTM[i].addr8) == 324)
+              {
+                  m_nav.m_pitch = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ; // Тангаж инерциальный
+              }
 
 
-        }
-  else qDebug() << "Ошибка";
 
 
+              }
 
+      }
 
-}
 
 bool Movement::send_sate(bool state)
 {

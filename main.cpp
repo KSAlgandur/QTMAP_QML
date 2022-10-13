@@ -47,6 +47,8 @@
 
 int main(int argc, char *argv[])
 {
+
+   try {
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
@@ -63,4 +65,13 @@ int main(int argc, char *argv[])
                  return -1;
 
     return app.exec();
+
+
+
+    }  catch (std::exception& ex) {
+
+        std::cout << ex.what() << "\n";
+
+    }
+
 }

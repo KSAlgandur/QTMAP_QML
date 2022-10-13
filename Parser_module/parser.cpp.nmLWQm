@@ -18,11 +18,10 @@ void parser::parsing()
 {
     if(RTM2_update)
     {
-       const std::lock_guard<std::mutex> lock(mutex);
-       vec_RTM2.clear();
-       RTM2_update = false;
 
-      is_reserve_4 = false;
+        RTM2_update = false;
+        vec_RTM2.clear();
+         is_reserve_4 = false;
     }
 
 //    if(RTM2_reserve_update)
@@ -35,7 +34,6 @@ void parser::parsing()
 
     if(RTM4_update)
     {
-        const std::lock_guard<std::mutex> lock(mutex);
         vec_RTM4.clear();
         RTM4_update = false;
          is_reserve_4 = false;
@@ -93,7 +91,21 @@ void parser::parsing()
              break;
 
          }
+
+
+         if(file.atEnd())
+         {
+
+            qDebug() << "Конец файла " << '\n';
+         }
+
       }
+
+
+
+
+
+
 }
 
 void parser::RTM2(QStringList& lst, QString& str)

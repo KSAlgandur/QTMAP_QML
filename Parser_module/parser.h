@@ -7,6 +7,7 @@
 #include<cmath>
 #include<atomic>
 #include <linux/types.h>
+#include <mutex>
 
 class parser
 {
@@ -19,6 +20,8 @@ public:
 //    void RTM2_reserve(QStringList lst,QString str);
 //    void RTM4_reserve(QStringList lst,QString str);
 
+
+    std::mutex mutex;
 
     bool RTM2_is_updaded();
     bool RTM4_is_updaded();

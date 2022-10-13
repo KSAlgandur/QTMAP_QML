@@ -13,6 +13,7 @@
 #include <pex429.h>
 #include <coefficients.h>
 #include <boost/thread/mutex.hpp>
+#include <stdexcept>
 
 struct Navigation{
     Q_GADGET
