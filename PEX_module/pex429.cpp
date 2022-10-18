@@ -4,7 +4,7 @@
 
 
 
-pex429::pex429(const char* pex_name,QObject *parent, parser& pars):QObject(parent),pars(pars)
+pex429::pex429(const char* pex_name,QObject *parent, parser& pars, Generator& gen):QObject(parent),pars(pars),gen(gen)
 {
     testMode = 1;
     this -> pex_name = pex_name;
@@ -19,14 +19,31 @@ pex429::~pex429()
 
 }
 
-void pex429::update()
+void pex429::update(int& type)
 {
   while (timer_loop == true)
      {
-//      qDebug() << "THREAD++++++\n";
-        int chanel_num = PEX_data_update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
-        ReadDataFromPEX(chanel_num);
+
+      switch (type) {
+      case 1 : {
+          int chanel_num = PEX_data_update();
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+          ReadDataFromPEX(chanel_num);
+          break;
+           }
+
+      case 2:{
+
+            PEX_autoData_update();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+            break;
+         }
+      }
+
+////      qDebug() << "THREAD++++++\n";
+//        int chanel_num = PEX_data_update();
+//        std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+//        ReadDataFromPEX(chanel_num);
    }
 
 }
@@ -73,11 +90,6 @@ ioctl(hARINC,IOCTL_GET_SER_NUMBER ,Data);
    }
    PUSK_SO(hARINC,Data,1,0,0,0);
 
-    // PEX_data_update();
-
-//   t = boost::thread(&pex429::update,this);
-//   t.detach();
-
 return 0;
 }
 int pex429::PEX_data_update()
@@ -106,6 +118,16 @@ int pex429::PEX_data_update()
     }
 
     return global_chanel_num;
+}
+
+void pex429::PEX_autoData_update()
+{
+    std::cout <<" HELLO " << "\n";
+
+
+
+
+
 }
 __u32 pex429::toArincWord(ArincWord &Aw)
 {

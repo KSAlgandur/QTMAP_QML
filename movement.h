@@ -13,7 +13,9 @@
 #include <pex429.h>
 #include <coefficients.h>
 #include <boost/thread/mutex.hpp>
+#include<boost/ref.hpp>
 #include <stdexcept>
+#include <generator.h>
 
 struct Navigation{
     Q_GADGET
@@ -92,12 +94,15 @@ private:
 
     parser pars;
     pex429 pex;
+    Generator gen;
+
 
     double m_x = 0;
     double m_y = 0;
 
     double speed_imit = 0;
     bool autoGen = false;
+    int type_update = 0;
 
     int ToOctal(int decimal)
     {

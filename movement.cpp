@@ -5,7 +5,7 @@ boost::mutex mutex;
 
 
 Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
-  ,pex("/dev/pex429_0",parent, pars)
+  ,pex("/dev/pex429_0",parent, pars, gen)
 {
     // начальное положение тела
     r.x = m_x = 55.8586;//55.758636;
@@ -31,9 +31,11 @@ void Movement::on_btnGo_clicked()
 
         timer->start(10);
         pex.thread_loop_state();
-        qDebug() << "Запуск имитатора " << endl;
-        t = boost::thread(&pex429::update,&pex);
+        t = boost::thread(&pex429::update,&pex,type_update);
         t.detach();
+
+        qDebug() << "Запуск имитатора " << endl;
+
     }
     else {
         timer->stop();
@@ -44,7 +46,26 @@ void Movement::on_btnGo_clicked()
 
 void Movement::auto_gen_data()
 {
-  //Пока пусто//
+    v.x = v0*cos(angle);
+    v.y = v0*sin(angle);
+
+    r.x += v.x*dt;
+    r.y += v.y*dt;
+
+
+    m_nav.m_roll  = 0.54 + (rand()%50)/8;
+    m_nav.m_pitch = 12.45 + (rand()%100)/12;
+    m_nav.m_angle = angle *180/M_PI;
+    m_nav.m_lat   = r.x;
+    m_nav.m_lng   = r.y;
+    m_nav.m_v     = sqrt(pow(v.x,2) + pow(v.y,2));
+
+
+    float h_counter = 1;
+    speed_imit     += 0.0001;
+    h_counter       = h_counter * speed_imit * 100;
+    m_nav.m_h       = h_counter;
+
 }
 
 void Movement::not_auto_gen_data()
@@ -114,9 +135,6 @@ void Movement::qml_update(QVector<parser::word> vec_RTM)
                   m_nav.m_pitch = (double)(get_value_from_word(vec_RTM[i].data32,28,14,true)* a_c::K5 * a_c::rad2deg) ; // Тангаж инерциальный
               }
 
-
-
-
               }
 
       }
@@ -126,13 +144,17 @@ bool Movement::send_sate(bool state)
 {
     if(state == 0)
     {
-       std::cout << "ethernet send off"<<std::endl;
-       autoGen = true;
+       std::cout << "Автогенирация ВЫКЛ"<<std::endl;
+       autoGen = false;
+       type_update = 1;
+
     }
     else{
 
-        std::cout<<"ethernet send on"<<std::endl;
-        autoGen = false;
+        std::cout<<"Автогенирация ВКЛ"<<std::endl;
+        autoGen = true;
+        type_update = 2;
+
     }
 
    return autoGen;
@@ -143,7 +165,6 @@ bool Movement::send_sate(bool state)
 void Movement::generate_new_angle()
 {
     angle =(QRandomGenerator::global()->bounded(0,360))/180.0*M_PI;;
-
 }
 
 QVariantMap Movement::getMyStruct() const
@@ -160,39 +181,18 @@ void Movement::setMyStruct(QVariantMap myStruct)
 void Movement::move()
 {
 
-  if(autoGen)
+  if(!autoGen)
     {
        not_auto_gen_data();
-  }
+    }
 
-  else
-  {
+   else if(autoGen)
+    {
+     auto_gen_data();
+    }
 
-      v.x = v0*cos(angle);
-      v.y = v0*sin(angle);
-
-      r.x += v.x*dt;
-      r.y += v.y*dt;
-
-
-      m_nav.m_roll  = 0.54 + (rand()%50)/8;
-      m_nav.m_pitch = 12.45 + (rand()%100)/12;
-      m_nav.m_angle = angle *180/M_PI;
-      m_nav.m_lat   = r.x;
-      m_nav.m_lng   = r.y;
-      m_nav.m_v     = sqrt(pow(v.x,2) + pow(v.y,2));
-
-
-          float h_counter = 1;
-          speed_imit     += 0.0001;
-          h_counter       = h_counter * speed_imit * 100;
-          m_nav.m_h       = h_counter;
-
-
-  }
 
    setMyStruct(myStructToQVariantMap(m_nav));
-
 }
 
 

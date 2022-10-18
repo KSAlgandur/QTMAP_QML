@@ -22,6 +22,8 @@
 #include "readparamdispatcher.h"
 #include <thread>
 #include "po_struct.h"
+#include "generator.h"
+
 #define	ULONG	 __u32			//unsigned long int
 
 using namespace brlk;
@@ -30,13 +32,16 @@ class pex429 : public QObject
 {
      Q_OBJECT
 public:
-    pex429(const char* pex_name, QObject *patent,parser& pars);
+    pex429(const char* pex_name, QObject *patent,parser& pars,Generator& gen);
     ~pex429();
+
+
+
     int connectToPEX();
     void send_vec (QVector<__u32> words);
      __u32 sendForArray (__u8 addr, __u32 word);
 
-
+     bool timer_loop = false ;
 
      void sendTo_1_chanel(const QVector<parser::word>& vec_RTM2, int ch_1);
      void sendTo_2_chanel(const QVector<parser::word>& vec_RTM4, int ch_2);
@@ -51,14 +56,16 @@ public:
 
      int  PEX_data_update();
 
+     void PEX_autoData_update();
+
 public slots:
-void update();
+void update(int& type);
 
 
 
 private:
     int global_chanel_num;
-    bool timer_loop = false ;
+
     const int ch_1 = 1;
     const int ch_2 = 2;
     const int ch_3 = 3;
@@ -66,6 +73,9 @@ private:
     QTimer tm_pex;
     QTimer tm_read;
     parser& pars;
+    Generator& gen;
+
+
     ULONG	param[256];
     int 	i1 = 0;
     long int outputParam,receivedParam;
@@ -75,7 +85,7 @@ private:
     unsigned short int	buff[16];
     struct sigaction action;
     struct itimerval timer;
-    struct	timeval start,end;
+    struct timeval start,end;
     int rj, ind1,testType;
     int testMode;
 
