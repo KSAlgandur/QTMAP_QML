@@ -5,7 +5,7 @@ boost::mutex mutex;
 
 
 Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
-  ,pex("/dev/pex429_0",parent, pars, gen)
+  ,pex("/dev/pex429_0",parent, pars, gen, sock)
 {
     // начальное положение тела
     r.x = m_x = 55.8586;//55.758636;
@@ -14,11 +14,11 @@ Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
     timer = new QTimer(this);
     timer2 = new QTimer(this);
 
+    //connect(&sock,SIGNAL(send_udp_str(ons &out_str)),this,SLOT(qml_update_from_udp(ons &out_str)));
+    connect(&sock,SIGNAL(send_udp_vec(QVector<my_type::word> w)),this,SLOT(get_udp_vec(QVector<my_type::word> w)));
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
     connect(timer2,SIGNAL(timeout()),this,SLOT(generate_new_angle()));
-     //connect(timer3,SIGNAL(timeout()),&pex,SLOT(update()));
 
-    //timerQML->start(100);
      timer2->start(9000);
 
      pex.connectToPEX();
@@ -66,6 +66,8 @@ void Movement::auto_gen_data()
     h_counter       = h_counter * speed_imit * 100;
     m_nav.m_h       = h_counter;
 
+    //qDebug() << m_nav.m_lat << '\n';
+
 }
 
 void Movement::not_auto_gen_data()
@@ -92,6 +94,13 @@ void Movement::not_auto_gen_data()
     }
 
 
+
+}
+
+void Movement::udp_gen_data()
+{
+   ons obj;
+   qml_update_from_udp(sock.send_udp_str(obj));
 
 }
 
@@ -137,27 +146,46 @@ void Movement::qml_update(QVector<parser::word> vec_RTM)
 
               }
 
-      }
+}
 
-
-bool Movement::send_sate(bool state)
+void Movement::qml_update_from_udp(ons &out_str)
 {
-    if(state == 0)
+     m_nav.m_lat     = out_str.Latitude;
+     m_nav.m_lng     = out_str.Longitude;
+     m_nav.m_angle   = out_str.Head;
+     m_nav.m_v       = out_str.Vn;
+     m_nav.m_roll    = out_str.Roll;
+     m_nav.m_pitch   = out_str .Pitch;
+     m_nav.m_h       = out_str.AltitudeBar;
+
+
+}
+
+
+int Movement::send_sate(int state)
+{
+    if(state == 1)
     {
-       std::cout << "Автогенирация ВЫКЛ"<<std::endl;
+       std::cout << "Чтение из файла"<<std::endl;
        autoGen = false;
-       type_update = 1;
+       type_update = 1; //enum
+
 
     }
-    else{
+    else if(state == 2){
 
-        std::cout<<"Автогенирация ВКЛ"<<std::endl;
-        autoGen = true;
+        std::cout<<"Автогенирация"<<std::endl;
         type_update = 2;
-
     }
 
-   return autoGen;
+    else if(state == 3){
+        std::cout<<"Приём по соккету"<<std::endl;
+        type_update = 3;
+    }
+
+
+
+   return type_update;
 }
 
 
@@ -181,14 +209,24 @@ void Movement::setMyStruct(QVariantMap myStruct)
 void Movement::move()
 {
 
-  if(!autoGen)
-    {
-       not_auto_gen_data();
-    }
 
-   else if(autoGen)
-    {
-     auto_gen_data();
+    switch (type_update) {
+
+    case 1:{
+      not_auto_gen_data();
+      break;
+    }
+    case 2:{
+       auto_gen_data();
+        break;
+    }
+    case 3:{
+        udp_gen_data();
+        break;
+    }
+    default:{
+        break;
+    }
     }
 
 

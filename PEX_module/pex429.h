@@ -1,7 +1,6 @@
 #ifndef PEX429_H
 #define PEX429_H
 
-
 #include <QObject>
 #include <signal.h>
 #include <stdio.h>
@@ -23,6 +22,7 @@
 #include <thread>
 #include "po_struct.h"
 #include "generator.h"
+#include "qudpsocketcat.h"
 
 #define	ULONG	 __u32			//unsigned long int
 
@@ -32,7 +32,7 @@ class pex429 : public QObject
 {
      Q_OBJECT
 public:
-    pex429(const char* pex_name, QObject *patent,parser& pars,Generator& gen);
+    pex429(const char* pex_name, QObject *patent,parser& pars,Generator& gen,QUdpSocketCat& sock);
     ~pex429();
 
 
@@ -43,8 +43,11 @@ public:
 
      bool timer_loop = false ;
 
-     void sendTo_1_chanel(const QVector<parser::word>& vec_RTM2, int ch_1);
-     void sendTo_2_chanel(const QVector<parser::word>& vec_RTM4, int ch_2);
+
+     template <typename T>
+     void sendTo_1_chanel(const QVector<T>& vec_RTM2, int ch_1);
+     template <typename T>
+     void sendTo_2_chanel(const QVector<T>& vec_RTM4, int ch_2);
      void sendTo_3_chanel(const QVector<parser::word>& vec_RTM2_res, int ch_3);
      void sendTo_4_chanel(const QVector<parser::word>& vec_RTM4_res, int ch_4);
      void Disconnect();
@@ -59,7 +62,7 @@ public:
      void PEX_autoData_update();
 
 public slots:
-void update(int& type);
+void update(int type);
 
 
 
@@ -74,6 +77,7 @@ private:
     QTimer tm_read;
     parser& pars;
     Generator& gen;
+    QUdpSocketCat& sock;
 
 
     ULONG	param[256];

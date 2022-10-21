@@ -16,6 +16,11 @@
 #include<boost/ref.hpp>
 #include <stdexcept>
 #include <generator.h>
+#include <qudpsocketcat.h>
+#include <data_types.h>
+
+using namespace brlk;
+typedef struct brlk::apu::po::out::Ons ons;
 
 struct Navigation{
     Q_GADGET
@@ -62,6 +67,13 @@ public:
     QVariantMap myStructToQVariantMap(Navigation const &myStruct) const;
     Navigation myStructFromQVariantMap(QVariantMap const &vm) const;
 
+
+    void auto_gen_data();
+    void not_auto_gen_data();
+    void udp_gen_data();
+
+
+
 signals:
 
   void myStructChanged(const QVariantMap& nav_data);
@@ -70,10 +82,10 @@ signals:
 public slots:
 
     void on_btnGo_clicked();
-    void auto_gen_data();
-    void not_auto_gen_data();
-    void qml_update(QVector<parser::word> vec_RTM) ;
-    bool send_sate(bool state);
+    void qml_update(QVector<parser::word> vec_RTM);
+    void qml_update_from_udp(ons &out_str);
+    int send_sate(int state);
+    void get_udp_vec(QVector<my_type::word> w);
 
 private slots:
 
@@ -92,17 +104,20 @@ private:
     Navigation m_nav;
     bool IsRun = false;
 
+
+
     parser pars;
     pex429 pex;
     Generator gen;
+    QUdpSocketCat sock;
 
 
     double m_x = 0;
     double m_y = 0;
 
     double speed_imit = 0;
-    bool autoGen = false;
-    int type_update = 0;
+    bool autoGen = true;
+    int type_update = 2;
 
     int ToOctal(int decimal)
     {

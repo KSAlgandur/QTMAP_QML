@@ -5,10 +5,13 @@ message("BRLK loaded");
 
     HEADERS += $$PWD/po_struct.h
 
-    SOURCES +=  $$PWD/po_struct.cpp
+    #SOURCES +=  $$PWD/po_struct.cpp
 
 
     INCLUDEPATH += $$PWD/
 }
+
+HEADERS += \
+    $$PWD/data_types.h
 
 

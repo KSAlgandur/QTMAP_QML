@@ -17,6 +17,7 @@ include(Brlk/brlk.pri)
 include(PEX_module/PEX.pri)
 include(Parser_module/parser.pri)
 include(DataGenerator_module/generate.pri)
+include(UDP_Reader/Udp_reader.pri)
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
 

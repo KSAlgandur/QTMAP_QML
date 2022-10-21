@@ -4,7 +4,7 @@
 
 
 
-pex429::pex429(const char* pex_name,QObject *parent, parser& pars, Generator& gen):QObject(parent),pars(pars),gen(gen)
+pex429::pex429(const char* pex_name,QObject *parent, parser& pars, Generator& gen, QUdpSocketCat& sock):QObject(parent),pars(pars),gen(gen),sock(sock)
 {
     testMode = 1;
     this -> pex_name = pex_name;
@@ -19,33 +19,43 @@ pex429::~pex429()
 
 }
 
-void pex429::update(int& type)
+void pex429::update(int type)
 {
+
+
+
   while (timer_loop == true)
      {
 
+
+//      qDebug() << type << '\n';
       switch (type) {
       case 1 : {
           int chanel_num = PEX_data_update();
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+          std::this_thread::sleep_for(std::chrono::milliseconds(20));//200
           ReadDataFromPEX(chanel_num);
           break;
            }
 
       case 2:{
-
+            qDebug() << " AUTO GENERATE " << "\n";
             PEX_autoData_update();
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));//200
+
             break;
          }
+      default: {
+          break;
       }
 
-////      qDebug() << "THREAD++++++\n";
+      }
+//
 //        int chanel_num = PEX_data_update();
-//        std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+//      std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
 //        ReadDataFromPEX(chanel_num);
-   }
+//   }
 
+ }
 }
 int pex429::connectToPEX()
 {
@@ -122,11 +132,15 @@ int pex429::PEX_data_update()
 
 void pex429::PEX_autoData_update()
 {
-    std::cout <<" HELLO " << "\n";
+     gen.generate();
 
+     sendTo_1_chanel(gen.get_gnData_RTM2(),ch_1);
+     global_chanel_num = ch_1;
+     ReadDataFromPEX(global_chanel_num);
 
-
-
+     sendTo_2_chanel(gen.get_gnData_RTM4(),ch_2);
+     global_chanel_num = ch_2;
+     ReadDataFromPEX(global_chanel_num);
 
 }
 __u32 pex429::toArincWord(ArincWord &Aw)
@@ -150,7 +164,8 @@ __u32 pex429::sendForArray(__u8 addr, __u32 word)
     return arinc_out;
 }
 
-void pex429::sendTo_1_chanel(const QVector<parser::word>& vec_RTM2,int ch_1)
+ template <typename T>
+ void pex429::sendTo_1_chanel(const QVector<T>& vec_RTM2,int ch_1)
 {
     for(i1 = 1; i1 < vec_RTM2.count(); i1++)
     {
@@ -158,10 +173,9 @@ void pex429::sendTo_1_chanel(const QVector<parser::word>& vec_RTM2,int ch_1)
         outputParam = arr ;
         WRITE_PRM(hARINC,Data,ch_1,0,i1,outputParam);
     }
-
 }
-
-void pex429::sendTo_2_chanel(const QVector<parser::word>& vec_RTM4,int ch_2)
+template <typename T>
+void pex429::sendTo_2_chanel(const QVector<T>& vec_RTM4,int ch_2)
 {
 
     for(i1 = 1; i1 < vec_RTM4.count(); i1++)
@@ -217,7 +231,6 @@ void pex429::Disconnect()
 
 void pex429::ReadDataFromPEX(int& chanel_num)
 {
-    //std::cout<<"im raed"<< endl;
     int  chanel =  chanel_num;
     int size = 0 ;
     std::string chanel_name;
@@ -243,9 +256,6 @@ void pex429::ReadDataFromPEX(int& chanel_num)
         chanel_name = "RTM_4_reserve ";
 
     }
-
-//    size = vec1.size();
-//    chanel_number = 1;
     //3.3.2.12. Чтение параметра входного канала ПК.
 
   for(i1 = 0;i1 < size; i1++)

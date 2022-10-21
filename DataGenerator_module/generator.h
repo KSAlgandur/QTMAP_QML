@@ -25,6 +25,8 @@ class Generator : public QObject
 public:
     explicit Generator(QObject *parent = nullptr);
     ~Generator();
+
+
     struct word
     {
         __u8 addr8;

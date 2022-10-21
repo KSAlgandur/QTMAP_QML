@@ -201,6 +201,8 @@ Window {
 
 
 
+
+
             Text {
                 id: topText
                 text: qsTr("Навигационные данные")
@@ -226,7 +228,7 @@ Window {
                               Text { font.pointSize: 12;text: 'Курс: '     + coords.angle_new.toFixed(3)     + " град."}
                               Text { font.pointSize: 12;text: 'Крен: '     + coords.roll_new.toFixed(3)      + " град."}
                               Text { font.pointSize: 12;text: 'Тангаж: '   + coords.pitch_new.toFixed(3)     + " град."}
-                              Text { font.pointSize: 12;text: 'ТЕСТ: '     + coords.test.toFixed(4)          + " град."}
+
 
                           }
 
@@ -251,10 +253,10 @@ Window {
                             text: qsTr("Автоматическая генерация")
                             onCheckedChanged: {
                                 if(checked){
-                                    myclass.send_sate(true)
+                                    myclass.send_sate(1)
                                     console.log(text)
                                     check2.checked = false
-
+                                    check3.checked = false
 
 
                                 }
@@ -268,15 +270,41 @@ Window {
                             checked:false
                             onCheckedChanged: {
                                 if(checked){
-                                    myclass.send_sate(false)
+                                    myclass.send_sate(2)
                                     console.log(text)
                                     check1.checked = false
+                                    check3.checked = false
                                 }
                             }
                         }
 
 
+                        CheckBox {
+                            id: check3
+                            font.pixelSize: 15
+                            font.family: "Helvetica"
+                            text: qsTr("Приём данных по сокету")
+                            checked:false
+                                onCheckedChanged: {
+                                    if(checked){
+                                        myclass.send_sate(3)
+                                        console.log(text)
+                                        check1.checked = false
+                                        check2.checked = false
+                                    }
+
+                                }
+
+                           }
+
+
+
+
+
                     }
+
+
+
 
 
 
@@ -284,7 +312,6 @@ Window {
                          var item = marker1.createObject(window, {coordinate: QtPositioning.coordinate(lat, lng)})
                           mapView.addMapItem(item)
                        }
-
 
 
 
@@ -330,6 +357,7 @@ Window {
                    console.log("Stop simulation")
                    startButton.text = "Старт"
                    startButton.checked == false
+                   messages_text.text ="Start"
 
                }
 
@@ -339,7 +367,65 @@ Window {
             }
 
 
-            }
+          }
+
+
+
+
+            Text {
+                           text: "служебные сообщения:"
+                           font.family: "Helvetica"
+                           font.pointSize: 12
+                           color: "black"
+                           anchors.top:  parent.right;
+                           Layout.leftMargin: 7
+                           Layout.column: 1
+                           Layout.row: 8
+                       }
+
+
+            Rectangle{
+
+
+                anchors.right:  parent.right;
+                anchors.margins: 70
+                x:0
+                y:170
+
+
+
+                            width: 200
+                            height: 100
+                            Layout.row: 9
+                            color: "white"
+                            opacity: 0.6
+                            radius: 11
+                            Text {
+                                text: messages_text.elidedText
+                                font.family: "Helvetica"
+                            }
+
+
+                                       TextMetrics {
+                                           id: messages_text
+                                           font.family: "Helvetica"
+                                           elide: Text.ElideMiddle
+                                           elideWidth: 200
+                                           font.pointSize: 20
+                                           text: " hello mrls "
+
+                                       }
+
+
+
+
+
+
+                        }
+
+
+
+
 
 
 }
