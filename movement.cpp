@@ -13,9 +13,6 @@ Movement::Movement(QObject *parent) : QObject(parent),pars("textoout22.txt")
 
     timer = new QTimer(this);
     timer2 = new QTimer(this);
-
-    //connect(&sock,SIGNAL(send_udp_str(ons &out_str)),this,SLOT(qml_update_from_udp(ons &out_str)));
-    connect(&sock,SIGNAL(send_udp_vec(QVector<my_type::word> w)),this,SLOT(get_udp_vec(QVector<my_type::word> w)));
     connect(timer,SIGNAL(timeout()),this,SLOT(move()));
     connect(timer2,SIGNAL(timeout()),this,SLOT(generate_new_angle()));
 
@@ -155,7 +152,7 @@ void Movement::qml_update_from_udp(ons &out_str)
      m_nav.m_angle   = out_str.Head;
      m_nav.m_v       = out_str.Vn;
      m_nav.m_roll    = out_str.Roll;
-     m_nav.m_pitch   = out_str .Pitch;
+     m_nav.m_pitch   = out_str.Pitch;
      m_nav.m_h       = out_str.AltitudeBar;
 
 

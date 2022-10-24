@@ -26,9 +26,6 @@ void pex429::update(int type)
 
   while (timer_loop == true)
      {
-
-
-//      qDebug() << type << '\n';
       switch (type) {
       case 1 : {
           int chanel_num = PEX_data_update();
@@ -44,6 +41,12 @@ void pex429::update(int type)
 
             break;
          }
+
+      case 3:{
+          qDebug() << " DATA FROM UDP " << "\n";
+          PEX_udpData_update();
+          std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      }
       default: {
           break;
       }
@@ -55,8 +58,9 @@ void pex429::update(int type)
 //        ReadDataFromPEX(chanel_num);
 //   }
 
- }
+  }
 }
+
 int pex429::connectToPEX()
 {
    hARINC=open("/dev/pex429_0",0);
@@ -141,6 +145,28 @@ void pex429::PEX_autoData_update()
      sendTo_2_chanel(gen.get_gnData_RTM4(),ch_2);
      global_chanel_num = ch_2;
      ReadDataFromPEX(global_chanel_num);
+
+}
+
+size_t pex429::send_to_pex_from_udp(QVector<my_type::word> vec_RTM)
+{
+
+    size_t vec_size = vec_RTM.size();
+    for(i1 = 1; i1 < vec_RTM.count(); i1++)
+    {
+        __u32 arr = sendForArray(vec_RTM[i1].addr8,vec_RTM[i1].data32);
+        outputParam = arr ;
+        WRITE_PRM(hARINC,Data,ch_1,0,i1,outputParam);
+    }
+
+   return  vec_size;
+}
+
+void pex429::PEX_udpData_update()
+{
+
+    sock.init_connection();
+    ReadDataFromPEX(send_to_pex_from_udp(sock.send_udp_vec()));
 
 }
 __u32 pex429::toArincWord(ArincWord &Aw)
@@ -265,7 +291,19 @@ void pex429::ReadDataFromPEX(int& chanel_num)
       std::cout  << chanel_name << "  parameter " << i1 << " :" << "received = " << receivedCode << "\n";
    }
 
-  }
+}
+
+void pex429::ReadDataFromPEX(size_t size)
+{
+    //3.3.2.12. Чтение параметра входного канала ПК.
+
+  for(size_t i1 = 0;i1 < size; i1++)
+  {
+      READ_PRM_SS(hARINC,Data,1,0,i1,receivedCode);
+
+      std::cout  << "RTM_2(UDP)" << "  parameter " << i1 << " :" << "received = " << receivedCode << "\n";
+   }
+}
 
 void pex429::hINT(int signo)
 {

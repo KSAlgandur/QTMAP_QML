@@ -19,6 +19,7 @@
 #include <qudpsocketcat.h>
 #include <data_types.h>
 
+
 using namespace brlk;
 typedef struct brlk::apu::po::out::Ons ons;
 
@@ -85,7 +86,7 @@ public slots:
     void qml_update(QVector<parser::word> vec_RTM);
     void qml_update_from_udp(ons &out_str);
     int send_sate(int state);
-    void get_udp_vec(QVector<my_type::word> w);
+
 
 private slots:
 

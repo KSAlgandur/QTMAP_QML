@@ -23,8 +23,10 @@
 #include "po_struct.h"
 #include "generator.h"
 #include "qudpsocketcat.h"
+#include <data_types.h>
 
 #define	ULONG	 __u32			//unsigned long int
+
 
 using namespace brlk;
 
@@ -52,6 +54,7 @@ public:
      void sendTo_4_chanel(const QVector<parser::word>& vec_RTM4_res, int ch_4);
      void Disconnect();
      void ReadDataFromPEX(int& chanel_num);
+     void ReadDataFromPEX(size_t size);
      void hINT (int signo);
      void Init();
      void sendTest(std::vector<__u32> words);
@@ -61,8 +64,13 @@ public:
 
      void PEX_autoData_update();
 
+     void PEX_udpData_update();
+     size_t send_to_pex_from_udp(QVector<my_type::word>);
+
+
 public slots:
 void update(int type);
+
 
 
 

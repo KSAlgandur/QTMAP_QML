@@ -19,25 +19,20 @@ QUdpSocketCat::QUdpSocketCat(QObject *parent) : QObject{parent}
     in = new QUdpSocket(this);
     timer = new QTimer(this);
 
-
-    in->bind(QHostAddress::LocalHost,10053);
     connect (in, SIGNAL(readyRead()), this, SLOT(catData()));
     //connect(this,SIGNAL(send_udp_vec),&mov,SLOT())
-
-
-
-    timer->start(5000);
     connect(timer, &QTimer::timeout, [] (){
         qDebug() << QTime::currentTime().toString()
                        << "Время прослушки канала вышло, данные не пришли ";
-         qDebug() << "Рекомендуется сменить режим имитации либо устранить неполадки с адресантом";
+         qDebug() << "Рекомендуется сменить режим имитации либо устранить неполадки с адресантом";      
+    }); 
+}
 
-       //QCoreApplication::instance()->exit();
-    });
-
-    qDebug() << QTime::currentTime().toString()
-                 << "Start listening to the host";
-
+void QUdpSocketCat::init_connection()
+{
+    in->bind(QHostAddress::LocalHost,10053);
+    qDebug() << QTime::currentTime().toString() << "Start listening to the host";
+    timer->start(5000);
 }
 
 void QUdpSocketCat::convers2Arinc(ons &out_str)
@@ -79,9 +74,9 @@ void QUdpSocketCat::convers2Arinc(ons &out_str)
     vec_udp.append(w);
 
 
-     w.data32 = (static_cast<__u32>(out_str.Ve / a_c::K4))<<8;
-     w.addr8  = ToDecimal(367);
-     vec_udp.append(w);
+    w.data32 = (static_cast<__u32>(out_str.Ve / a_c::K4))<<8;
+    w.addr8  = ToDecimal(367);
+    vec_udp.append(w);
 
 
     w.data32 = (static_cast<__u32>(out_str.Vn / a_c::K4))<<8;  ;
@@ -94,17 +89,22 @@ void QUdpSocketCat::convers2Arinc(ons &out_str)
     w.addr8  = ToDecimal(365);
     vec_udp.append(w);
 
-    send_udp_vec(vec_udp);
+    send_udp_vec();
 }
 
-QVector<QUdpSocketCat::word> QUdpSocketCat::get_udp_data()
+QVector<my_type::word> QUdpSocketCat::get_udp_data()
 {
     return vec_udp;
 }
 
 ons& QUdpSocketCat::send_udp_str(ons &out_str)
 {
-     return out_str;
+    return out_str;
+}
+
+QVector<my_type::word> QUdpSocketCat::send_udp_vec()
+{
+    return vec_udp;
 }
 
 void QUdpSocketCat::catData()
@@ -116,11 +116,7 @@ void QUdpSocketCat::catData()
      quint16 senderPort;
 
      in->readDatagram(datagram.data(),datagram.size(),&sender,&senderPort);
-
-
      ons *out_str = reinterpret_cast<ons *>(datagram.data());
-
-
 
      qDebug() << QTime::currentTime().toString() << QString("Пакет получен %1:%2")
                  .arg(sender.toString()).arg(senderPort) << '\n';

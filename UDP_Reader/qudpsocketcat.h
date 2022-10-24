@@ -13,6 +13,7 @@
 #include "po_struct.h"
 #include <linux/types.h>
 #include <coefficients.h>
+#include <data_types.h>
 
 
 using namespace brlk;
@@ -29,13 +30,8 @@ class QUdpSocketCat : public QObject
 
     int ToDecimal(int octal);
 
-    struct word
-    {
-        __u8 addr8;
-        __u32 data32;
-    };
-    word w;
-    QVector<word> vec_udp;
+    QVector<my_type::word> vec_udp;
+    my_type::word w;
 
 public:
     explicit QUdpSocketCat(QObject *parent = nullptr);
@@ -43,17 +39,15 @@ public:
     ons srt_ons;
     sns str_sns;
 
+    void init_connection();
     void convers2Arinc(ons &out_str);
-    QVector<word> get_udp_data();
-    ons send_udp_str(ons &out_str);
+    QVector<my_type::word> get_udp_data();
+    ons& send_udp_str(ons &out_str);
+    QVector<my_type::word> send_udp_vec();
 
 protected slots:
     void catData ();
 
-
-signals:
-
-  void send_udp_vec(QVector<word> w);
 
 
 };

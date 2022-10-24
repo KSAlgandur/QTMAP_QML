@@ -7,14 +7,14 @@
 namespace my_type
 
 {
-
         struct word
     {
         __u8 addr8;
         __u32 data32;
     };
-    word w;
 
+
+    //word w;
 
 
 }
