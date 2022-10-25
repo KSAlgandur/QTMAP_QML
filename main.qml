@@ -253,7 +253,7 @@ Window {
                             text: qsTr("Автоматическая генерация")
                             onCheckedChanged: {
                                 if(checked){
-                                    myclass.send_sate(1)
+                                    myclass.send_sate(2)
                                     console.log(text)
                                     check2.checked = false
                                     check3.checked = false
@@ -266,11 +266,11 @@ Window {
                             id: check2
                             font.pixelSize: 15
                             font.family: "Helvetica"
-                            text: qsTr("Генерация из файла")
+                            text: qsTr("Чтение из файла")
                             checked:false
                             onCheckedChanged: {
                                 if(checked){
-                                    myclass.send_sate(2)
+                                    myclass.send_sate(1)
                                     console.log(text)
                                     check1.checked = false
                                     check3.checked = false

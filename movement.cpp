@@ -28,7 +28,8 @@ void Movement::on_btnGo_clicked()
 
         timer->start(10);
         pex.thread_loop_state();
-        t = boost::thread(&pex429::update,&pex,type_update);
+
+        t = boost::thread(&Movement::update,this,this,type_update);
         t.detach();
 
         qDebug() << "Запуск имитатора " << endl;
@@ -96,9 +97,47 @@ void Movement::not_auto_gen_data()
 
 void Movement::udp_gen_data()
 {
-   ons obj;
-   qml_update_from_udp(sock.send_udp_str(obj));
+    ons obj;
+    memset(&obj, 0, sizeof(ons));
+    qml_update_from_udp(sock.send_udp_str(obj));
+    pex.PEX_udpData_update();
 
+}
+
+void Movement::update(Movement * obj, int type)
+{
+
+
+    while (pex.timer_loop == true)
+       {
+        switch (type) {
+        case 1 : {
+            int chanel_num = obj->pex.PEX_data_update();
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));//200
+            obj->pex.ReadDataFromPEX(chanel_num);
+            break;
+             }
+
+        case 2:{
+
+              obj->pex.PEX_autoData_update();
+              std::this_thread::sleep_for(std::chrono::milliseconds(50));//200
+
+              break;
+           }
+
+//        case 3:{
+
+//            obj->pex.PEX_udpData_update();
+//            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+//        }
+        default: {
+            break;
+        }
+
+        }
+
+}
 }
 
 void Movement::qml_update(QVector<parser::word> vec_RTM)
@@ -178,6 +217,9 @@ int Movement::send_sate(int state)
     else if(state == 3){
         std::cout<<"Приём по соккету"<<std::endl;
         type_update = 3;
+        sock.init_connection();
+
+
     }
 
 

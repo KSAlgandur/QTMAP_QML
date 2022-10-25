@@ -73,7 +73,7 @@ public:
     void not_auto_gen_data();
     void udp_gen_data();
 
-
+    void update(Movement * obj,int type);
 
 signals:
 

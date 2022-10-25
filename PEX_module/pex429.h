@@ -67,12 +67,7 @@ public:
      void PEX_udpData_update();
      size_t send_to_pex_from_udp(QVector<my_type::word>);
 
-
-public slots:
-void update(int type);
-
-
-
+     //void update(int type);
 
 private:
     int global_chanel_num;

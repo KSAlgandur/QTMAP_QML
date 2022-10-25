@@ -19,47 +19,45 @@ pex429::~pex429()
 
 }
 
-void pex429::update(int type)
-{
+//void pex429::update(int type)
+//{
 
+//  while (timer_loop == true)
+//     {
+//      switch (type) {
+//      case 1 : {
+//          int chanel_num = PEX_data_update();
+//          std::this_thread::sleep_for(std::chrono::milliseconds(20));//200
+//          ReadDataFromPEX(chanel_num);
+//          break;
+//           }
 
+//      case 2:{
 
-  while (timer_loop == true)
-     {
-      switch (type) {
-      case 1 : {
-          int chanel_num = PEX_data_update();
-          std::this_thread::sleep_for(std::chrono::milliseconds(20));//200
-          ReadDataFromPEX(chanel_num);
-          break;
-           }
+//            PEX_autoData_update();
+//            std::this_thread::sleep_for(std::chrono::milliseconds(50));//200
 
-      case 2:{
-            qDebug() << " AUTO GENERATE " << "\n";
-            PEX_autoData_update();
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));//200
+//            break;
+//         }
 
-            break;
-         }
+//      case 3:{
 
-      case 3:{
-          qDebug() << " DATA FROM UDP " << "\n";
-          PEX_udpData_update();
-          std::this_thread::sleep_for(std::chrono::milliseconds(50));
-      }
-      default: {
-          break;
-      }
+//          PEX_udpData_update();
+//          std::this_thread::sleep_for(std::chrono::milliseconds(50));
+//      }
+//      default: {
+//          break;
+//      }
 
-      }
-//
-//        int chanel_num = PEX_data_update();
-//      std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
-//        ReadDataFromPEX(chanel_num);
-//   }
+//      }
+////
+////        int chanel_num = PEX_data_update();
+////      std::this_thread::sleep_for(std::chrono::milliseconds(1));//200
+////        ReadDataFromPEX(chanel_num);
+////   }
 
-  }
-}
+//  }
+//}
 
 int pex429::connectToPEX()
 {
@@ -164,10 +162,7 @@ size_t pex429::send_to_pex_from_udp(QVector<my_type::word> vec_RTM)
 
 void pex429::PEX_udpData_update()
 {
-
-    sock.init_connection();
     ReadDataFromPEX(send_to_pex_from_udp(sock.send_udp_vec()));
-
 }
 __u32 pex429::toArincWord(ArincWord &Aw)
 {
@@ -366,5 +361,6 @@ void pex429::sendTest(std::vector<__u32> words)
 void pex429::thread_loop_state()
 {
     timer_loop =! timer_loop;
+
 }
 
