@@ -39,10 +39,12 @@ public:
     ons srt_ons;
     sns str_sns;
 
+    ons *out_str;
+
     void init_connection();
     void convers2Arinc(ons &out_str);
     QVector<my_type::word> get_udp_data();
-    ons& send_udp_str(ons &out_str);
+    ons& send_udp_str();
     QVector<my_type::word> send_udp_vec();
 
 protected slots:

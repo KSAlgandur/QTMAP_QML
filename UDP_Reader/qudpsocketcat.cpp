@@ -37,6 +37,8 @@ void QUdpSocketCat::init_connection()
 
 void QUdpSocketCat::convers2Arinc(ons &out_str)
 {
+    vec_udp.clear();
+
     w.data32 = (static_cast<__u32>(out_str.Latitude/a_c::K1/a_c::rad2deg)) << 8; // Географическая широта
     w.addr8  = ToDecimal(310);
     vec_udp.append(w);
@@ -90,6 +92,7 @@ void QUdpSocketCat::convers2Arinc(ons &out_str)
     vec_udp.append(w);
 
     send_udp_vec();
+
 }
 
 QVector<my_type::word> QUdpSocketCat::get_udp_data()
@@ -97,9 +100,9 @@ QVector<my_type::word> QUdpSocketCat::get_udp_data()
     return vec_udp;
 }
 
-ons& QUdpSocketCat::send_udp_str(ons &out_str)
+ons& QUdpSocketCat::send_udp_str()
 {
-    return out_str;
+    return *out_str;
 }
 
 QVector<my_type::word> QUdpSocketCat::send_udp_vec()
@@ -116,15 +119,15 @@ void QUdpSocketCat::catData()
      quint16 senderPort;
 
      in->readDatagram(datagram.data(),datagram.size(),&sender,&senderPort);
-     ons *out_str = reinterpret_cast<ons *>(datagram.data());
+     out_str = reinterpret_cast<ons *>(datagram.data());
 
      qDebug() << QTime::currentTime().toString() << QString("Пакет получен %1:%2")
                  .arg(sender.toString()).arg(senderPort) << '\n';
 
 
-
+         send_udp_str();
          convers2Arinc(*out_str);
-         send_udp_str(*out_str);
+
 
          timer->start(5000);
 

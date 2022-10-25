@@ -99,7 +99,8 @@ void Movement::udp_gen_data()
 {
     ons obj;
     memset(&obj, 0, sizeof(ons));
-    qml_update_from_udp(sock.send_udp_str(obj));
+    obj = sock.send_udp_str();
+    qml_update_from_udp(obj);
     pex.PEX_udpData_update();
 
 }
@@ -221,8 +222,6 @@ int Movement::send_sate(int state)
 
 
     }
-
-
 
    return type_update;
 }
