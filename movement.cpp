@@ -102,6 +102,7 @@ void Movement::udp_gen_data()
     obj = sock.send_udp_str();
     qml_update_from_udp(obj);
     pex.PEX_udpData_update();
+    printf("\n");
 
 }
 
@@ -205,6 +206,8 @@ int Movement::send_sate(int state)
     {
        std::cout << "Чтение из файла"<<std::endl;
        autoGen = false;
+       sock.disconnect();
+       sock.timer->stop();
        type_update = 1; //enum
 
 
@@ -212,6 +215,8 @@ int Movement::send_sate(int state)
     else if(state == 2){
 
         std::cout<<"Автогенирация"<<std::endl;
+        sock.disconnect();
+        sock.timer->stop();
         type_update = 2;
     }
 

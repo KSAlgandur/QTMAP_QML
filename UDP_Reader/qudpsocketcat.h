@@ -26,7 +26,6 @@ class QUdpSocketCat : public QObject
     Q_OBJECT
     QUdpSocket * in;
     QUdpSocket * out;
-    QTimer *timer;
 
     int ToDecimal(int octal);
 
@@ -38,6 +37,7 @@ public:
 
     ons srt_ons;
     sns str_sns;
+    QTimer *timer;
 
     ons *out_str;
 
@@ -46,6 +46,7 @@ public:
     QVector<my_type::word> get_udp_data();
     ons& send_udp_str();
     QVector<my_type::word> send_udp_vec();
+    void disconnect();
 
 protected slots:
     void catData ();

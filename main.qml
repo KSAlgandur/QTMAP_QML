@@ -139,21 +139,6 @@ Window {
                        sourceItem: Image { id: image2; x: -20;  y:-30 ; sourceSize.height: 80; sourceSize.width: 70;  source: "qrc:/Images/drone2.png"}
 
    }
-//        MapCircle {
-//                center {
-
-
-
-//                    latitude: -27.5
-//                    longitude: 153.0
-//                }
-//                radius: 100.0
-//                color: 'green'
-//                border.width: 3
-//            }
-
-
-    // addMarker(coords.lat_new,coords.lon_new)
 
 
 
@@ -195,7 +180,7 @@ Window {
             visible: true
             color: "grey"
             opacity: 0.8
-            width: 600; height: 400
+            width: 500; height: 300
             anchors.bottom: parent.bottom
             radius: 11
 
@@ -217,6 +202,7 @@ Window {
 
             Column {
                               id: column
+                              y:300
                               anchors { fill: parent; margins: 30;}
 
 
@@ -257,6 +243,7 @@ Window {
                                     console.log(text)
                                     check2.checked = false
                                     check3.checked = false
+                                     messages_text.text = "Automatic generation"
 
 
                                 }
@@ -274,10 +261,10 @@ Window {
                                     console.log(text)
                                     check1.checked = false
                                     check3.checked = false
+                                    messages_text.text = "Reading from a file"
                                 }
                             }
                         }
-
 
                         CheckBox {
                             id: check3
@@ -291,6 +278,7 @@ Window {
                                         console.log(text)
                                         check1.checked = false
                                         check2.checked = false
+                                        messages_text.text = "Receiving over UDP connection"
                                     }
 
                                 }
@@ -349,6 +337,7 @@ Window {
                    startButton.text = "Стоп"
                    console.log("Start simulation")
                    startButton.checked == true
+                   messages_text.text ="Stop simulation"
 
                }
                else if(startButton.checked == true)
@@ -357,7 +346,7 @@ Window {
                    console.log("Stop simulation")
                    startButton.text = "Старт"
                    startButton.checked == false
-                   messages_text.text ="Start"
+                   messages_text.text ="Start simulation"
 
                }
 
@@ -372,59 +361,69 @@ Window {
 
 
 
-            Text {
-                           text: "служебные сообщения:"
-                           font.family: "Helvetica"
-                           font.pointSize: 12
-                           color: "black"
-                           anchors.top:  parent.right;
-                           Layout.leftMargin: 7
-                           Layout.column: 1
-                           Layout.row: 8
-                       }
+//            Text {
+//                           id: texF
+//                           text: "Cлужебные сообщения:"
+
+//                           anchors.right:parent.right;
+//                           anchors.margins: 80
+//                           x:0
+//                           y:170
+
+//                           font.family: "Helvetica"
+//                           font.pointSize: 12
+//                           color: "black"
+//                           Layout.leftMargin: 7
+//                           Layout.column: 1
+//                           Layout.row: 8
 
 
-            Rectangle{
-
-
-                anchors.right:  parent.right;
-                anchors.margins: 70
-                x:0
-                y:170
-
-
-
-                            width: 200
-                            height: 100
-                            Layout.row: 9
-                            color: "white"
-                            opacity: 0.6
-                            radius: 11
-                            Text {
-                                text: messages_text.elidedText
-                                font.family: "Helvetica"
-                            }
-
-
-                                       TextMetrics {
-                                           id: messages_text
-                                           font.family: "Helvetica"
-                                           elide: Text.ElideMiddle
-                                           elideWidth: 200
-                                           font.pointSize: 20
-                                           text: " hello mrls "
-
-                                       }
+//                       }
 
 
 
 
 
+//            Rectangle{
 
-                        }
+//                id: rec2
+//                anchors.right:  parent.right;
+//                anchors.rightMargin: 70
+//                anchors {
+//                    top: texF.bottom
+
+//                }
 
 
 
+//                            width: 200
+//                            height: 100
+//                            Layout.row: 40
+//                            color: "white"
+//                            opacity: 0.6
+//                            radius: 11
+//                            Text {
+//                                text: messages_text.elidedText
+//                                font.family: "Helvetica"
+//                            }
+
+
+//                                       TextMetrics {
+//                                           id: messages_text
+//                                           font.family: "Helvetica"
+//                                           elide: Text.ElideMiddle
+//                                           elideWidth: 300
+//                                           font.pointSize: 20
+//                                           text: " hello mrls "
+
+//                                       }
+
+
+
+
+
+
+//        }
 
 
 

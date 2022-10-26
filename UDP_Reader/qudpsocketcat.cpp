@@ -18,9 +18,10 @@ QUdpSocketCat::QUdpSocketCat(QObject *parent) : QObject{parent}
 {
     in = new QUdpSocket(this);
     timer = new QTimer(this);
+    in->close();
 
     connect (in, SIGNAL(readyRead()), this, SLOT(catData()));
-    //connect(this,SIGNAL(send_udp_vec),&mov,SLOT())
+
     connect(timer, &QTimer::timeout, [] (){
         qDebug() << QTime::currentTime().toString()
                        << "Время прослушки канала вышло, данные не пришли ";
@@ -33,6 +34,7 @@ void QUdpSocketCat::init_connection()
     in->bind(QHostAddress::LocalHost,10053);
     qDebug() << QTime::currentTime().toString() << "Start listening to the host";
     timer->start(5000);
+
 }
 
 void QUdpSocketCat::convers2Arinc(ons &out_str)
@@ -108,6 +110,12 @@ ons& QUdpSocketCat::send_udp_str()
 QVector<my_type::word> QUdpSocketCat::send_udp_vec()
 {
     return vec_udp;
+}
+
+void QUdpSocketCat::disconnect()
+{
+    in->abort();
+    in->close();
 }
 
 void QUdpSocketCat::catData()
